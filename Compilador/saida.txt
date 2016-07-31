@@ -1,0 +1,7 @@
+Tabela de Simbolos:
+
+n# - lexema - tipo - linha1 - qwesxrdctfvgybhunjmiuhnbygtfvrccexsrcdftvgbhnjhuygbvtfcrdexsrdftv - identificador - 12 - exemploteste - identificador - 23 - realf - identificador - 44 - = - operador relacional - 46 - flag - identificador - 47 - = - operador relacional - 49 - se - palavra reservada - 410 - ( - delimitador - 411 - f - palavra reservada - 412 - >= - operador relacional - 413 - 10 - numero - 414 - ) - delimitador - 415 - e - operador logico - 416 - ( - delimitador - 417 - f - palavra reservada - 418 - < - operador relacional - 419 - ) - delimitador - 420 - escreva - palavra reservada - 521 - ( - delimitador - 5
+
+Tabela de Erros:
+
+n# - lexema - tipo - linha1 - 3acaractere - numero mal formado - 42 - 'teste' - caractere mal formado - 43 - " mensagem )  - cadeia de caracteres mal formada - 5
