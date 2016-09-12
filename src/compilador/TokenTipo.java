@@ -27,7 +27,7 @@ public class TokenTipo {
         numeros= "0123456789";
         sinais = "-+*/";
         relacionais = "<> <= >="; 
-        delimitadores = "( ),;";
+        delimitadores = "( ),; << <<< >>>";
     }
     
     public Token analise (String token){

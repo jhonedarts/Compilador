@@ -95,8 +95,21 @@ public class Lexico {
                                             (a == '>' && (line.charAt(i+1) == '=' )) ){
                                         i++; v++;
                                         lexema = lexema.concat(line.charAt(i)+"");
-                                        System.out.println(i+"<>");
+                                        
                                     }
+                                    if (a == '<' && (line.charAt(i+1) == '<') ){                                        
+                                        i++; v++;
+                                        lexema = lexema.concat(line.charAt(i)+"");
+                                        if(line.charAt(i+1) == '<'){
+                                            i++; v++;
+                                            lexema = lexema.concat(line.charAt(i)+"");
+                                        }
+                                    }
+                                    if(a == '>' && (line.charAt(i+1) == '>') && (line.charAt(i+2) == '>')){
+                                        i+=2; v+=2;
+                                        lexema = lexema.concat(line.charAt(i-1)+""+line.charAt(i));                                        
+                                    }
+                                    System.out.println(i+"<>");
                                 }catch(StringIndexOutOfBoundsException ex){//pro caso de " nao ser fechada
 
                                 }

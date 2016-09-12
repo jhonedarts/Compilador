@@ -1,8 +1,8 @@
-exemplo teste;
+hope exemplo teste;
 
-real f = 3a;
+real f = 3<<<a>>>;
 
-caractere flag = 'teste';
+caractere flag << 'teste';
 
 se ( f >= 10) e (f < ) 
 	escreva(" mensagem );

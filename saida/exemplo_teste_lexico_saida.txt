@@ -18,7 +18,7 @@
 7 e operador logico
 7 ( delimitador
 7 f identificador
-7 < operador relacional
+7 < delimitador
 7 ) delimitador
 8 escreva palavra reservada
 8 ( delimitador
