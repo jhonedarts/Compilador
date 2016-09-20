@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compilador.AnaliseLexica;
+package compilador.Lexico;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,7 +17,7 @@ import java.util.LinkedList;
  *
  * @author jhone e matheus
  */
-public class Lexico {
+public class LexicoOld {
 
     /**
      * @param args the command line arguments
