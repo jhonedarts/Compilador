@@ -4,51 +4,89 @@
  * and open the template in the editor.
  */
 package compilador.Sintatico;
-import compilador.Lexico.Token;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import compilador.Lexico.Token;
+import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Stack;
+import java.util.List;
 
 /**
  *
- * @author Mt Castro
+ * @author Jhone e Matheus Castro
  */
 public class Sintatico {
-    private File outArq;
-    private LinkedList tableTokens;
-    private Stack pilha;
+    private LinkedList<Token> tokens;
+    private LinkedList<String> erros;
+    private int atual;
 
     public Sintatico() {
-    }
-
-    public Sintatico(File outArq, LinkedList tableTokens) {
-        this.outArq = outArq;
-        this.tableTokens = tableTokens;
-        this.pilha = new Stack();
-        
-        Token t = new Token("$", 0, true);
-        this.tableTokens.add(t);
-        
-        Producao p = new Producao("Programa", false);
-        Producao p2 = new Producao("$", true);
-        this.pilha.add(p2);
-        this.pilha.add(p);
+        erros = new LinkedList<String>();
     }
  
     public void start(LinkedList tokens){
-        Stack pilha = new Stack();
-        Token t = new Token("$", 0, true);
-        this.tableTokens.add(t);
-        
-        Producao p = new Producao("Programa", false);
-        Producao p2 = new Producao("$", true);
-        this.pilha.add(p2);
-        this.pilha.add(p);
+        this.tokens = tokens;     
+        atual=0;
+        var();
+    }
+    //vê o token atual
+    private Token ver(){
+        return verLLX(1);
+    }
+    //vê qualquer token que vósmicê quiseres
+    private Token verLLX(int x){
+        if (atual + x >= tokens.size())
+            throw new RuntimeException("final não esperado");// mudar tipo de excecao depois
+        return tokens.get(atual + x);
+    }
+    //consome o token atual incrementando o valor de "atual"
+    private void consume(){
+        atual++;
+    }
+    // modo panico
+    // vai consumir ate o atual se tornar um token de sync passado por parametro
+    private void sincronizar(String... syncC){   
+        List<String> sync = Arrays.asList(syncC);
+    	while(!sync.contains(ver().getLexema()) || !sync.contains(ver().getTipo())){
+    		System.out.println("Pulou Token: " + ver().getLexema());
+    		consume();
+    	}
+    }
+    ///// BAGACEIRA //////
+    
+    // var | c
+    private void var(){
+        if (ver().getTipo().equals("var")){
+            consume();//consome var
+            //codigo do var
+        }
+        c();
+    }
+    
+    // c | programa
+    private void c(){
+        if (ver().getTipo().equals("const")){
+            consume();
+            // codigo de const
+        }            
+        programa();        
+    }
+    
+    // programa
+    private void programa(){
+        if (ver().getTipo().equals("programa")){
+            //bloco
+        }else{
+            erros.add("Esperava \"program\", linha "+ver().getLinha());
+            sincronizar("inicio", ";", "sync1", "sync2", "sync3");//escolher tokens sync para programa
+            //sincronizar leitura com token que vai para bloco
+            if (ver().getLexema().equals("inicio")||ver().getLexema().equals(";")){//vericicar todos os tokens que vao pra bloco
+                //bloco();
+            }
+            //sincronizar leitura com token que vai para funcao
+            else if (ver().getLexema().equals("funcao")){
+                //funcao();
+            }
+            System.out.println("Houston, temos um problema!");
+        }            
     }
 }
