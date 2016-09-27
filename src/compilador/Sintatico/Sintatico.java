@@ -21,18 +21,25 @@ public class Sintatico {
 
     public Sintatico() {
         erros = new LinkedList<Erro>();
+        tokens = new LinkedList<Token>();
     }
  
-    public void start(LinkedList tokens){
-        this.tokens = tokens;     
+    public void start(LinkedList<Token> tokens){        
         atual=0;
+        this.tokens.addAll(tokens);        
+        //tirando os comentarios
+        for(Token tok: tokens){
+            if(tok.getTipo().equals("comentario"))
+                this.tokens.remove(tok);
+        }
+        
         System.out.println("----------------- Analise Sintatica -----------------\n");
         programa();
         if (erros.isEmpty())
             System.out.println("Sucesso!");
         else{
             for(Erro error: erros){
-                System.out.println("Esperava \""+error.getEsperado()+"\" na linha: "+error.getLinha());
+                System.out.println("Esperava \""+error.getEsperado()+"\" mas obteve \""+error.getObtido()+"\" na linha: "+error.getLinha());
             }
         }
     }
@@ -92,7 +99,7 @@ public class Sintatico {
                 //bloco
                 consumir();
             }else{
-                erros.add(new Erro("programa", ver().getLinha()));
+                erros.add(new Erro("programa", ver().getLexema(), ver().getLinha()));
                 sincronizar("inicio", ";", "sync1", "sync2", "sync3");//escolher tokens sync para programa
                 //sincronizar leitura com token que vai para bloco
                 if (ver().getLexema().equals("inicio")||ver().getLexema().equals(";")){//vericicar todos os tokens que vao pra bloco
@@ -144,8 +151,8 @@ public class Sintatico {
                 }else{
                     //panico pra caso nao tiver inicio
                     //aqui que será tomado a decisao de onde seguir apartir do token sincronizado
-                    erros.add(new Erro("inicio",ver().getLinha()));                    
-                    sincronizar("inicio", ";", "inteiro", "real", "booleano", "caractere", "cadeia de caracteres", "fim", "programa");
+                    erros.add(new Erro("inicio", ver().getLexema(), ver().getLinha()));                    
+                    sincronizar("inicio", ";", "inteiro", "real", "booleano", "caractere", "cadeia", "fim", "programa");
                     if (igual(ver().getLexema(), ";", "inteiro", "real", "booleano", "caractere", "cadeia"))
                         varlist();
                     else if(igual(ver().getLexema(), "inicio")){ 
@@ -157,7 +164,7 @@ public class Sintatico {
                     consumir();
                 }else{
                     //panico pra caso nao tiver fim
-                    erros.add(new Erro("fim", ver().getLinha()));
+                    erros.add(new Erro("fim", ver().getLexema(), ver().getLinha()));
                     sincronizar("fim", "programa", "const");     
                     if (igual(ver().getLexema(), "fim"))
                         consumir();
@@ -169,16 +176,20 @@ public class Sintatico {
         }
     }
 
+    // inteiro | real | booleano | cadeia | caractere
+    private boolean isTipo() throws EndTokensException{
+        return igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia");
+    }
     // <tipo> <R> <varlist2>
     private void varlist() throws EndTokensException {
-        if (igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia")){
+        if (isTipo()){
             consumir();
             R();
             varlist2();
         }else{
             //panico -tipo
-            erros.add(new Erro("tipo", ver().getLinha()));
-            sincronizar(";", "fim", "programa", "const");
+            erros.add(new Erro("tipo", ver().getLexema(), ver().getLinha()));
+            sincronizar(";", "fim", "programa", "const", "inicio");
             if (igual(ver().getLexema(), ";"))
                 varlist2(); 
             // se for fim progrma ou const nao fazer nada, pois assim retorna pra variaveis e ela se vira
@@ -186,7 +197,7 @@ public class Sintatico {
     }
     // <varlist> | <>
     private void varlist2() throws EndTokensException{
-        if(igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia"))
+        if(isTipo())
             varlist();
     }
     //id <vetor> <R2>
@@ -197,7 +208,7 @@ public class Sintatico {
             R2();
         }else{
             //panico pra falta de id
-            erros.add(new Erro("identificador", ver().getLinha()));
+            erros.add(new Erro("identificador", ver().getLexema(), ver().getLinha()));
             sincronizar(";", "fim", "programa", "const");
             if (igual(ver().getLexema(), ";"))
                 consumir();
@@ -212,7 +223,7 @@ public class Sintatico {
             consumir();
         } else{
             //panico
-            erros.add(new Erro(";", ver().getLinha()));
+            erros.add(new Erro(";", ver().getLexema(), ver().getLinha()));
             sincronizar(";", "fim", "programa", "const");
             if (igual(ver().getLexema(), ";"))
                 consumir();            
@@ -222,27 +233,91 @@ public class Sintatico {
     private void vetor() throws EndTokensException {
         if(ver().getLexema().equals("<<<")){
             consumir();
-            exp_aritimetica();               
+            exp_aritimetica(); // a fazer              
             if(ver().getLexema().equals(">>>")){
                 consumir();
                 vetor();
             }else{
                 //panico
-                erros.add(new Erro(">>>", ver().getLinha()));
-                //so
+                erros.add(new Erro(">>>",ver().getLexema(), ver().getLinha()));
+                //só
             }
         }
     }
     
     ////////////////////////    constantes    /////////////////////////////
+    
+    //const inicio <constlist> fim
     private void constantes(){
         try {
-            if (ver().getLexema().equals("const")){
-                consumir();
-                // codigo de const
-            }
+            if (ver().getLexema().equals("const")){//se nao tem var pula pra c()                
+                consumir();//consome var
+                if (ver().getLexema().equals("inicio")){
+                    consumir();
+                    constlist();// fica dentro do if mesmo, pq se der erro no else 
+                                //escolho pra onde ir e nao obritoriamente ir pro proximo
+                }else{
+                    //panico pra caso nao tiver inicio
+                    //aqui que será tomado a decisao de onde seguir apartir do token sincronizado
+                    erros.add(new Erro("inicio",ver().getLexema(),ver().getLinha()));                    
+                    sincronizar("inicio", ";", "inteiro", "real", "booleano", "caractere", "cadeia", "fim", "programa");
+                    if (igual(ver().getLexema(), ";", "inteiro", "real", "booleano", "caractere", "cadeia"))
+                        constlist();
+                    else if(igual(ver().getLexema(), "inicio")){ 
+                        consumir();
+                        constlist();
+                    }
+                }                
+                if (ver().getLexema().equals("fim")){
+                    consumir();
+                }else{
+                    //panico pra caso nao tiver fim
+                    erros.add(new Erro("fim",ver().getLexema(), ver().getLinha()));
+                    sincronizar("fim", "programa", "inicio");     
+                    if (igual(ver().getLexema(), "fim"))
+                        consumir();
+                    //deixa passar                    
+                }
+            } 
         } catch (EndTokensException ex) {
             System.out.println(ex);
+        }
+    }
+    
+    //<tipo> <constatrib> ';' <constlist2>
+    private void constlist() throws EndTokensException{
+        if (isTipo()){
+            consumir();
+            constatrib();
+        }else{
+            //panico -tipo
+        }
+        if(ver().equals(";")){
+            consumir();
+            constlist2();
+        }else{
+            //panico -;
+        }
+    }
+    //<constlist> | <>
+    private void constlist2() throws EndTokensException{
+        //se nao tiver um tipo depois do
+        if(isTipo() || ver().getTipo().equals("identificador")){
+            constlist();
+        }
+    }
+    //id '<''<' <Literal><constatrib2> | id '<''<' <Literal>
+    private void constatrib() throws EndTokensException{
+        if(ver().getTipo().equals("identificador")){
+            consumir();            
+        }else{
+            //panico -id
+        }
+        if(ver().getLexema().equals("<<")){
+            consumir();
+            
+        }else{
+            //panico -<<
         }
     }
 

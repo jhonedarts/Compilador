@@ -8,6 +8,7 @@
 2 c identificador
 2 ; delimitador
 3 fim palavra reservada
+3 {asas} comentario
 5 programa palavra reservada
 5 inicio palavra reservada
 6 fim palavra reservada

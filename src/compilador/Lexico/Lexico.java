@@ -174,7 +174,6 @@ public class Lexico {
                         try{
                             while(!delimitadores.contains(line.charAt(i+1)+"")){   
                                 i++; v++;
-                                System.out.println(i+" else");
                                lexema = lexema.concat(line.charAt(i)+"");                                              
                             } 
                         }catch(StringIndexOutOfBoundsException ex){//pro caso de " nao ser fechada

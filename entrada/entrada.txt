@@ -1,6 +1,6 @@
-var inicio 
+var inicio
 inteiro a, b, c;
-fim
+fim{asas}
 
 programa inicio 
 fim

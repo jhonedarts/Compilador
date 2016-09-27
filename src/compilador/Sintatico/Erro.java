@@ -11,15 +11,21 @@ package compilador.Sintatico;
  */
 public class Erro {
     private String esperado;
+    private String obtido;
     private int linha;
 
-    public Erro(String esperado, int linha) {
+    public Erro(String esperado, String obtido, int linha) {
+        this.obtido = obtido;
         this.esperado = esperado;
         this.linha = linha;
     }
 
     public String getEsperado() {
         return esperado;
+    }
+    
+    public String getObtido() {
+        return obtido;
     }
 
     public int getLinha() {
