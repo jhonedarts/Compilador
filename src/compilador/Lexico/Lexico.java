@@ -36,6 +36,7 @@ public class Lexico {
     
     public LinkedList<Token> start(File fileIN) throws IOException{
         LinkedList<Token> tokensList = new LinkedList();
+        System.out.println("----------------- Analise Lexica -----------------\n");
         System.out.println("File: " + fileIN.getName());
         arqSaida = arqSaida.concat(fileIN.getName());
 

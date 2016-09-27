@@ -1,32 +1,14 @@
-1 hope identificador
-1 exemplo identificador
-1 teste identificador
-1 ; delimitador
-3 real palavra reservada
-3 f identificador
-3 = operador relacional
-3 3 numero
-3 <<< delimitador
-3 a identificador
-3 >>> delimitador
-3 ; delimitador
-5 caractere palavra reservada
-5 flag identificador
-5 << delimitador
-5 ; delimitador
-7 se palavra reservada
-7 ( delimitador
-7 f identificador
-7 >= operador relacional
-7 10 numero
-7 ) delimitador
-7 e operador logico
-7 ( delimitador
-7 f identificador
-7 < delimitador
-7 ) delimitador
-8 escreva palavra reservada
-8 ( delimitador
+1 var palavra reservada
+1 inicio palavra reservada
+2 inteiro identificador
+2 a identificador
+2 , delimitador
+2 b identificador
+2 , delimitador
+2 c identificador
+2 ; delimitador
+3 fim palavra reservada
+5 programa palavra reservada
+5 inicio palavra reservada
+6 fim palavra reservada
 
-5 'teste' caractere mal formado 
-8 " mensagem ); cadeia de caracteres mal formada 

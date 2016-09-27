@@ -7,8 +7,12 @@ package compilador.Sintatico;
 
 /**
  *
- * @author Mt Castro
+ * @author jmalmeida
  */
-public class Procedimentos {
+class EndTokensException extends Exception {
+
+    public EndTokensException(String msg) {
+        super(msg);
+    }
     
 }

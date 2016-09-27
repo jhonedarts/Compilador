@@ -16,77 +16,247 @@ import java.util.List;
  */
 public class Sintatico {
     private LinkedList<Token> tokens;
-    private LinkedList<String> erros;
+    private LinkedList<Erro> erros;
     private int atual;
 
     public Sintatico() {
-        erros = new LinkedList<String>();
+        erros = new LinkedList<Erro>();
     }
  
     public void start(LinkedList tokens){
         this.tokens = tokens;     
         atual=0;
-        var();
+        System.out.println("----------------- Analise Sintatica -----------------\n");
+        programa();
+        if (erros.isEmpty())
+            System.out.println("Sucesso!");
+        else{
+            for(Erro error: erros){
+                System.out.println("Esperava \""+error.getEsperado()+"\" na linha: "+error.getLinha());
+            }
+        }
     }
     //vê o token atual
-    private Token ver(){
-        return verLLX(1);
+    private Token ver() throws EndTokensException{
+        return verLLX(0);
     }
     //vê qualquer token que vósmicê quiseres
-    private Token verLLX(int x){
+    private Token verLLX(int x) throws EndTokensException{
         if (atual + x >= tokens.size())
-            throw new RuntimeException("final não esperado");// mudar tipo de excecao depois
+            throw new EndTokensException("final não esperado");// mudar tipo de excecao depois
         return tokens.get(atual + x);
     }
     //consome o token atual incrementando o valor de "atual"
-    private void consume(){
+    private void consumir(){
         atual++;
     }
     // modo panico
     // vai consumir ate o atual se tornar um token de sync passado por parametro
-    private void sincronizar(String... syncC){   
+    private void sincronizar(String... syncC) throws EndTokensException{   
         List<String> sync = Arrays.asList(syncC);
-    	while(!sync.contains(ver().getLexema()) || !sync.contains(ver().getTipo())){
+    	while(!sync.contains(ver().getLexema()) && !sync.contains(ver().getTipo())){
     		System.out.println("Pulou Token: " + ver().getLexema());
-    		consume();
+    		consumir();
     	}
+    }
+    
+    //super equals
+    private boolean igual(String... s){
+        String referencia = s[0];
+        for(int i=1; i<s.length;i++){
+            if (referencia.equals(s[i])){
+                return true;
+            }
+        }            
+        return false;
     }
     ///// BAGACEIRA //////
     
-    // var | c
-    private void var(){
-        if (ver().getTipo().equals("var")){
-            consume();//consome var
-            //codigo do var
-        }
+    // var c | c
+    private void programa(){
+        variaveis();
         c();
     }
     
-    // c | programa
+    // c programa | programa
     private void c(){
-        if (ver().getTipo().equals("const")){
-            consume();
-            // codigo de const
-        }            
-        programa();        
+        constantes();
+        p();        
     }
     
-    // programa
-    private void programa(){
-        if (ver().getTipo().equals("programa")){
-            //bloco
+    // programa | programa funcoes 
+    private void p(){
+        //programa p
+        try {
+            if (ver().getLexema().equals("programa")){
+                //bloco
+                consumir();
+            }else{
+                erros.add(new Erro("programa", ver().getLinha()));
+                sincronizar("inicio", ";", "sync1", "sync2", "sync3");//escolher tokens sync para programa
+                //sincronizar leitura com token que vai para bloco
+                if (ver().getLexema().equals("inicio")||ver().getLexema().equals(";")){//vericicar todos os tokens que vao pra bloco
+                    //bloco();
+                    consumir();
+                }
+                //sincronizar leitura com token que vai para funcao
+                else if (ver().getLexema().equals("funcao")){
+                    //funcao();
+                }
+                
+            }
+            if (ver().getLexema().equals("inicio")){
+                //bloco
+                consumir();
+            }
+            if (ver().getLexema().equals("fim")){
+                //bloco
+                consumir();
+            }
+        } catch (EndTokensException ex) {
+            System.out.println(ex);
+        }  
+        funcoes();
+    }
+    
+    // funcao funcoes | vazio
+    private void funcoes(){
+        try {
+            System.out.println(ver().getLexema());// so pra checar se o arquivo acabou, se sim, dara a exception
+            funcao();// tratar fim de arquivo dentro desta tb, pois ai seria erro
+            funcoes();
+        } catch (EndTokensException ex) {
+            //fim de arquivo
+        }  
+    }
+    
+    ////////////////////////    variaveis    /////////////////////////////
+    
+    // var inicio <varlist> fim
+    private void variaveis(){
+        try {
+            if (ver().getLexema().equals("var")){//se nao tem var pula pra c()                
+                consumir();//consome var
+                if (ver().getLexema().equals("inicio")){
+                    consumir();
+                    varlist();// fica dentro do if mesmo, pq se der erro no else 
+                                //escolho pra onde ir e nao obritoriamente ir pro proximo
+                }else{
+                    //panico pra caso nao tiver inicio
+                    //aqui que será tomado a decisao de onde seguir apartir do token sincronizado
+                    erros.add(new Erro("inicio",ver().getLinha()));                    
+                    sincronizar("inicio", ";", "inteiro", "real", "booleano", "caractere", "cadeia de caracteres", "fim", "programa");
+                    if (igual(ver().getLexema(), ";", "inteiro", "real", "booleano", "caractere", "cadeia"))
+                        varlist();
+                    else if(igual(ver().getLexema(), "inicio")){ 
+                        consumir();
+                        varlist();
+                    }
+                }                
+                if (ver().getLexema().equals("fim")){
+                    consumir();
+                }else{
+                    //panico pra caso nao tiver fim
+                    erros.add(new Erro("fim", ver().getLinha()));
+                    sincronizar("fim", "programa", "const");     
+                    if (igual(ver().getLexema(), "fim"))
+                        consumir();
+                    //deixa passar                    
+                }
+            } 
+        } catch (EndTokensException ex) {
+            System.out.println(ex);
+        }
+    }
+
+    // <tipo> <R> <varlist2>
+    private void varlist() throws EndTokensException {
+        if (igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia")){
+            consumir();
+            R();
+            varlist2();
         }else{
-            erros.add("Esperava \"program\", linha "+ver().getLinha());
-            sincronizar("inicio", ";", "sync1", "sync2", "sync3");//escolher tokens sync para programa
-            //sincronizar leitura com token que vai para bloco
-            if (ver().getLexema().equals("inicio")||ver().getLexema().equals(";")){//vericicar todos os tokens que vao pra bloco
-                //bloco();
-            }
-            //sincronizar leitura com token que vai para funcao
-            else if (ver().getLexema().equals("funcao")){
-                //funcao();
-            }
-            System.out.println("Houston, temos um problema!");
+            //panico -tipo
+            erros.add(new Erro("tipo", ver().getLinha()));
+            sincronizar(";", "fim", "programa", "const");
+            if (igual(ver().getLexema(), ";"))
+                varlist2(); 
+            // se for fim progrma ou const nao fazer nada, pois assim retorna pra variaveis e ela se vira
         }            
     }
+    // <varlist> | <>
+    private void varlist2() throws EndTokensException{
+        if(igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia"))
+            varlist();
+    }
+    //id <vetor> <R2>
+    private void R() throws EndTokensException {
+        if (ver().getTipo().equals("identificador")){
+            consumir();
+            vetor();
+            R2();
+        }else{
+            //panico pra falta de id
+            erros.add(new Erro("identificador", ver().getLinha()));
+            sincronizar(";", "fim", "programa", "const");
+            if (igual(ver().getLexema(), ";"))
+                consumir();
+        }
+    }
+    //','<R> | ';'
+    private void R2() throws EndTokensException{
+        if(ver().getLexema().equals(",")){
+            consumir();
+            R();
+        } else if(ver().getLexema().equals(";")){
+            consumir();
+        } else{
+            //panico
+            erros.add(new Erro(";", ver().getLinha()));
+            sincronizar(";", "fim", "programa", "const");
+            if (igual(ver().getLexema(), ";"))
+                consumir();            
+        }
+    }
+    //'<<<'<Exp_Aritmetica>'>>>'<vetor> | <>
+    private void vetor() throws EndTokensException {
+        if(ver().getLexema().equals("<<<")){
+            consumir();
+            exp_aritimetica();               
+            if(ver().getLexema().equals(">>>")){
+                consumir();
+                vetor();
+            }else{
+                //panico
+                erros.add(new Erro(">>>", ver().getLinha()));
+                //so
+            }
+        }
+    }
+    
+    ////////////////////////    constantes    /////////////////////////////
+    private void constantes(){
+        try {
+            if (ver().getLexema().equals("const")){
+                consumir();
+                // codigo de const
+            }
+        } catch (EndTokensException ex) {
+            System.out.println(ex);
+        }
+    }
+
+    ////////////////////////    funcoes    /////////////////////////////
+    private void funcao() {
+        
+    }
+
+    
+    
+    ////////////////////////    expressoes    /////////////////////////////
+    
+    private void exp_aritimetica() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

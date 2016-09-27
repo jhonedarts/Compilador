@@ -1,8 +1,6 @@
-hope exemplo teste;
+var inicio 
+inteiro a, b, c;
+fim
 
-real f = 3<<<a>>>;
-
-caractere flag << 'teste';
-
-se ( f >= 10) e (f < ) 
-	escreva(" mensagem );
+programa inicio 
+fim
