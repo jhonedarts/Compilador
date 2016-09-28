@@ -1,0 +1,9 @@
+02 tipo esperado
+
+02 ponto e virgula esperado
+
+06 valor esperado
+
+16 fecha parenteses esperado
+
+18 expressao relacional invalida

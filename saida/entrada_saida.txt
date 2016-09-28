@@ -7,9 +7,32 @@
 2 , delimitador
 2 c identificador
 2 ; delimitador
-3 fim palavra reservada
-3 {asas} comentario
-5 programa palavra reservada
-5 inicio palavra reservada
-6 fim palavra reservada
+3 b identificador
+3 , delimitador
+3 c identificador
+3 ; delimitador
+4 fim palavra reservada
+6 const palavra reservada
+6 inicio palavra reservada
+7 inteiro identificador
+7 a identificador
+7 << delimitador
+7 2 numero
+7 , delimitador
+7 b identificador
+7 << delimitador
+7 4 numero
+7 ; delimitador
+8 x identificador
+8 << delimitador
+8 3.2 numero
+8 , delimitador
+8 a identificador
+8 << delimitador
+8 1 numero
+8 ; delimitador
+9 fim palavra reservada
+11 programa palavra reservada
+11 inicio palavra reservada
+12 fim palavra reservada
 

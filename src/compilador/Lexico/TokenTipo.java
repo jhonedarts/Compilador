@@ -59,7 +59,7 @@ public class TokenTipo {
         else if (numeros.contains(token.charAt(0)+"") || ('-'==token.charAt(0) && token.length()>1)){
             boolean temPonto = false;
             for (int i=1; i<token.length(); i++){
-                if (!numeros.contains(token.charAt(i)+"") || (('.'==token.charAt(i)) && temPonto) ||
+                if ((!numeros.contains(token.charAt(i)+"") && !('.'==token.charAt(i))) || (('.'==token.charAt(i)) && temPonto) ||
                         ('.'==token.charAt(0)) || (('-'==token.charAt(0)) && ('.'==token.charAt(1))))
                     return new Token(token, 3, false); // numero mal formado
                 if ('.'==token.charAt(i))

@@ -5,6 +5,8 @@
  */
 package compilador.Sintatico;
 
+import compilador.Lexico.Token;
+
 /**
  *
  * @author jmalmeida
@@ -14,10 +16,10 @@ public class Erro {
     private String obtido;
     private int linha;
 
-    public Erro(String esperado, String obtido, int linha) {
-        this.obtido = obtido;
+    public Erro(String esperado, Token token) {
+        this.obtido = token.getLexema();
         this.esperado = esperado;
-        this.linha = linha;
+        this.linha = token.getLinha();
     }
 
     public String getEsperado() {

@@ -1,6 +1,12 @@
 var inicio
 inteiro a, b, c;
-fim{asas}
+ b, c;
+fim
+
+const inicio
+inteiro a<<2, b<<4;
+ x<< 3.2, a<<1;
+fim
 
 programa inicio 
 fim
