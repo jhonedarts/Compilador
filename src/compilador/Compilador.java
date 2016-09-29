@@ -33,7 +33,7 @@ public class Compilador {
             if (listOfFiles[y].isFile())
                 tokensList =  lexico.start(listOfFiles[y]);
             //chamar o sintatico passando tokensList como parametro
-            sintatico.start(tokensList);
+            sintatico.start(tokensList, listOfFiles[y].getName());
             //chamar o semantico, em um futuro nao muito distante
         }
     }

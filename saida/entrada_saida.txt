@@ -23,6 +23,7 @@
 7 << delimitador
 7 4 numero
 7 ; delimitador
+8 real palavra reservada
 8 x identificador
 8 << delimitador
 8 3.2 numero

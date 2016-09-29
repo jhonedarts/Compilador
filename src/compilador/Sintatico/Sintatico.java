@@ -6,6 +6,10 @@
 package compilador.Sintatico;
 
 import compilador.Lexico.Token;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +28,8 @@ public class Sintatico {
         tokens = new LinkedList<Token>();
     }
  
-    public void start(LinkedList<Token> tokens){        
+    public void start(LinkedList<Token> tokens, String nomeArq) throws IOException{   
+        nomeArq = nomeArq.split(".txt")[0];
         atual=0;
         this.tokens.addAll(tokens);        
         //tirando os comentarios
@@ -42,6 +47,24 @@ public class Sintatico {
                 System.out.println("Esperava \""+error.getEsperado()+"\" mas obteve \""+error.getObtido()+"\" na linha: "+error.getLinha());
             }
         }
+        
+        //gravar no txt
+        File file = new File(nomeArq+"_saida.txt");
+
+        if (!file.exists()){
+            new File(nomeArq+"_saida.txt").createNewFile();
+            file = new File(nomeArq+"_saida.txt");
+        }
+
+        PrintWriter gravarArq = new PrintWriter(new FileWriter(file));
+        if (erros.isEmpty())
+            gravarArq.printf("Sucesso!%n");
+        else{
+            for(Erro error: erros){
+                gravarArq.printf(error.getLinha()+" Esperava \""+error.getEsperado()+"\" mas obteve \""+error.getObtido()+"%n");
+            }
+        }
+        gravarArq.close();
     }
     //vê o token atual
     private Token ver() throws EndTokensException{
@@ -96,8 +119,8 @@ public class Sintatico {
         //programa p
         try {
             if (ver().getLexema().equals("programa")){
-                bloco();
                 consumir();
+                bloco();                
             }else{
                 erros.add(new Erro("programa", ver()));
                 sincronizar("inicio", ";", "sync1", "sync2", "sync3");//escolher tokens sync para programa
@@ -234,7 +257,7 @@ public class Sintatico {
     private void vetor() throws EndTokensException {
         if(ver().getLexema().equals("<<<")){
             consumir();
-            exp_aritimetica(); // a fazer   
+            exp_aritmetica(); // a fazer   
             vetor2();
             if(ver().getLexema().equals(">>>")){
                 consumir();                
@@ -253,7 +276,7 @@ public class Sintatico {
     private void vetor2() throws EndTokensException{
         if(ver().getLexema().equals(",")){
             consumir();
-            exp_aritimetica();
+            exp_aritmetica();
             vetor2();
         }
     }
@@ -536,8 +559,256 @@ public class Sintatico {
     ////////////////////////    comandos    /////////////////////////////
     
     //<Escreva> | <Leia> | <Se> | <Enquanto>
-    private void comando(){
-        
+    private void comando() throws EndTokensException{              
+        if (ver().getLexema().equals("Escreva")){
+            escreva();
+        }
+
+        else if(ver().getLexema().equals("leia")){
+            leia();
+        }
+        else if (ver().getLexema().equals("Enquanto")){
+            se();
+        }
+        else if (ver().getLexema().equals("Enquanto")){
+            enquanto();
+        }        
+    }
+    
+    //<Escreva> ::= 'escreva''('<Escreva_Params>')'';'
+    private void escreva(){
+        try {
+            if (ver().getLexema().equals("escreva")){               
+                consumir();
+                if(ver().getLexema().equals("(")){
+                    consumir();
+                    escreva_params();
+                    if(ver().getLexema().equals(")"))
+                        consumir();
+                    else{
+                        erros.add(new Erro(")", ver()));
+                        sincronizar(";");
+                        consumir();
+                    }
+                }else{
+                    erros.add(new Erro("(", ver()));
+                    sincronizar(";");
+                    consumir();
+                }
+            }else{
+                erros.add(new Erro("escreva", ver()));
+                sincronizar("(", ";");     
+                if (igual(ver().getLexema(), "(")){
+                    consumir();
+                    escreva_params();
+                }
+                else 
+                    consumir();
+                //deixa passar                    
+            }
+        } catch (EndTokensException ex) {
+            System.out.println(ex);
+        } 
+    }
+    //<Exp_Aritmetica><Escreva_Param2> | caractere_t<Escreva_Param2> | cadeia_t<Escreva_Param2>
+    private void escreva_params() throws EndTokensException{
+        if( (ver().getTipo().equals("identificador")||ver().getTipo().equals("numero")) &&(verLLX(1).getLexema().equals(","))){
+            consumir();
+            escreva_params2();
+        }//<Valor_Numerico> ::= '('<Exp_Aritmetica>')' | <Id_Vetor> | <Chamada_Funcao> | numero_t
+        else if (ver().getLexema().equals(")"))
+            erros.add(new Erro(")", ver()));
+        else
+           exp_aritmetica(); 
+    }
+
+    //<Escreva_Param2> ::= ','<Escreva_Params> | <>
+    private void escreva_params2() throws EndTokensException {
+        if(ver().getLexema().equals(","))
+            escreva_params();    
+    }
+    //<Leia> ::= 'leia''('<Leia_Params>')'';'
+    
+    private void leia(){
+        try {
+            if (ver().getLexema().equals("leia")){               
+                consumir();
+                if(ver().getLexema().equals("(")){
+                    consumir();
+                    leia_params();
+                    if(ver().getLexema().equals(")"))
+                        consumir();
+                    else{
+                        erros.add(new Erro(")", ver()));
+                        sincronizar(";");
+                        consumir();
+                    }
+                }else{
+                    erros.add(new Erro("(", ver()));
+                    sincronizar(";");
+                    consumir();
+                }
+            }else{
+                erros.add(new Erro("leia", ver()));
+                sincronizar("(", ";");     
+                if (ver().getLexema().equals("(")){
+                    consumir();
+                    escreva_params();
+                }
+                else
+                    consumir();
+                //deixa passar                    
+            }
+        } catch (EndTokensException ex) {
+            System.out.println(ex);
+        } 
+    }
+    
+    //<Id_Vetor><Leia_Param2>
+    private void leia_params() throws EndTokensException {
+        if(ver().getLexema().equals(")"))
+            erros.add(new Erro(")", ver()));
+        else{
+            id_vetor();
+            leia_params2();
+        }
+    }
+    
+    //<Leia_Param2> ::= ','<Leia_Params> | <>
+    private void leia_params2() throws EndTokensException {
+        if(ver().getLexema().equals(",")){
+            consumir();
+            leia_params();
+        }     
+    }
+    
+    //<Se> ::= 'se''('<Exp_Logica>')''entao'<Bloco><Senao>
+    private void se() throws EndTokensException {
+        if (ver().getLexema().equals("se")){
+            consumir();
+            if(ver().getLexema().equals("(")){
+                consumir();
+                exp_logica();
+                if(ver().getLexema().equals(")")){
+                    consumir();
+                    if(ver().getLexema().equals("entao")){
+                        consumir();
+                        bloco();
+                        senao();
+                        erros.add(new Erro("entao", ver()));
+                        sincronizar(";");
+                    }
+                    else{
+                        erros.add(new Erro("entao", ver()));
+                        sincronizar(";", "inicio");
+                        bloco();
+                        senao();
+                    }
+                }
+                else{
+                    erros.add(new Erro(")", ver()));
+                    sincronizar("entao", ";", "inicio");
+                    if(ver().getLexema().equals(")")){
+                        consumir();
+                        if(ver().getLexema().equals("entao")){
+                            consumir();
+                            bloco();
+                            senao();
+                        }
+                        else{
+                            erros.add(new Erro("entao", ver()));
+                            sincronizar(";", "inicio");
+                            bloco();
+                            senao();
+                        }
+                    }
+
+                }
+            }
+            else{
+                erros.add(new Erro("(", ver()));
+                sincronizar(")", "entao", ";", "inicio");
+                if(ver().getLexema().equals(")")){
+                    consumir();
+                    if(ver().getLexema().equals("entao")){
+                        consumir();
+                        bloco();
+                        senao();
+                    }
+                    else{
+                        erros.add(new Erro("entao", ver()));
+                        sincronizar(";", "inicio");
+                        bloco();
+                        senao();
+                    }
+                }
+                    
+            }
+        }
+    }
+    
+    //<Senao> ::= 'senao'<Bloco> | <>
+    private void senao() throws EndTokensException {
+        if(ver().getLexema().equals("senao")){
+            consumir();
+            bloco();
+        }
+            
+    }
+    
+    //<Enquanto> ::= 'enquanto''('<Exp_Logica>')''faca'<Bloco>
+    private void enquanto() throws EndTokensException{
+        if(ver().getLexema().equals("enquanto")){
+            consumir();
+            if(ver().getLexema().equals("(")){
+                consumir();
+                exp_logica();
+                if(ver().getLexema().equals(")")){
+                    consumir();
+                    if(ver().getLexema().equals("faca")){
+                        consumir();
+                        bloco();
+                    }
+                    else{
+                        erros.add(new Erro("faca", ver()));
+                        sincronizar(";", "inicio");
+                        bloco();
+                    }
+                }
+                else{
+                    erros.add(new Erro(")", ver()));
+                    sincronizar("faca", ";", "inicio");
+                    if(ver().getLexema().equals("faca")){
+                        consumir();
+                        bloco();
+                    }
+                    else
+                        bloco();
+                }    
+            }
+            else{
+                erros.add(new Erro("(", ver()));
+                sincronizar(")", "faca", ";", "inicio");
+                if(ver().getLexema().equals(")")){
+                    consumir();
+                    if(ver().getLexema().equals("faca")){
+                        consumir();
+                        bloco();
+                    }else{
+                        erros.add(new Erro("faca", ver()));
+                        sincronizar(";", "inicio");
+                        bloco();
+                    }
+                }
+                else if(ver().getLexema().equals("faca")){
+                    consumir();
+                    bloco();
+                }
+                else
+                    bloco();
+                    
+            }
+        }
     }
     ////////////////////////    atribuicao    /////////////////////////////
     
@@ -757,13 +1028,168 @@ public class Sintatico {
     
     ////////////////////////    expressoes    /////////////////////////////
     
-    private void exp_aritimetica() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    private void exp_logica() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    //<Exp_Aritmetica2><Exp_SomaSub>
+    private void exp_aritmetica() throws EndTokensException {
+        exp_aritmetica2();
+        exp_somasub();
     }
     
+    //<Operador_A1><Exp_Aritmetica2><Exp_SomaSub> | <>
+    private void exp_somasub() throws EndTokensException{
+        if (igual(ver().getLexema(),"+", "-")){//<operador_a1> ::= + | -
+            consumir();
+            exp_aritmetica2();
+            exp_somasub();
+        }        
+    }
+    
+    //<Valor_Numerico><Exp_MultDiv>
+    private void exp_aritmetica2() throws EndTokensException{
+        valor_numerico();
+        exp_muldiv();
+    }
+    
+    //<Operador_A2><Valor_Numerico><Exp_MultDiv> | <>
+    private void exp_muldiv() throws EndTokensException{
+        if (igual(ver().getLexema(),"/", "*")){//<operador_a2> ::= * | /
+            consumir();
+            valor_numerico();
+            exp_muldiv();
+        }
+    }
+    
+    //'('<Exp_Aritmetica>')' | <Id_Vetor> | <Chamada_Funcao> | numero_t
+    private void valor_numerico() throws EndTokensException{
+        if(ver().getLexema().equals("(")){
+            consumir();
+            exp_aritmetica();
+            if(ver().getLexema().equals(")")){
+                consumir();
+            }else{
+                //panico -(
+                erros.add(new Erro(")", ver()));
+                //nada
+            }
+        }else if(ver().getTipo().equals("identificador")){
+            if(verLLX(1).getLexema().equals("<<<"))                
+                id_vetor();
+            else
+                chamada_funcao();
+        }else if (ver().getTipo().equals("numero"))
+            consumir();
+            
+    }
+    
+    //<Exp_Logica2><Exp_Ou>
+    private void exp_logica() throws EndTokensException {
+        exp_logica2();
+        exp_ou();
+    }
+    
+    //'ou'<Exp_Logica2><Exp_Ou> | <>
+    private void exp_ou() throws EndTokensException{
+        if(ver().getLexema().equals("ou")){
+            consumir();
+            exp_logica2();
+            exp_ou();
+        }
+    }
+    
+    //<Exp_Nao><Exp_E>
+    private void exp_logica2() throws EndTokensException{
+        exp_nao();
+        exp_e();
+    }
+    
+    //'e'<Exp_Nao><Exp_E> | <>
+    private void exp_e() throws EndTokensException{
+        if(ver().getLexema().equals("e")){
+            consumir();
+            exp_nao();
+            exp_e();
+        }
+    }
+    
+    //'nao'<Valor_Booleano> | <Valor_Booleano>
+    private void exp_nao() throws EndTokensException{
+        if(ver().getLexema().equals("nao")){
+            valor_booleano();
+        }else
+            valor_booleano();
+    }
+    
+    //booleano_t | <Exp_Relacional>
+    private void valor_booleano() throws EndTokensException{
+        if(igual(ver().getLexema(),"verdadeiro", "falso")){
+            consumir();
+        }else
+            exp_relacional();
+    }
+    
+    //<Exp_Aritm_Logica><Exp_Relacional2>
+    private void exp_relacional() throws EndTokensException{
+        exp_arim_logica();
+        exp_relacional2();
+    }
+    
+    //<Operador_Relacional><Exp_Aritm_Logica> | <>
+    private void exp_relacional2() throws EndTokensException{
+        if(igual(ver().getLexema(), "<", "<=", ">", ">=", "<>", "=")){
+            consumir();
+            exp_arim_logica();
+        }
+    }
+    
+    //<Exp_Aritm_Logica2><Exp_SomaSub_Logica>
+    private void exp_arim_logica() throws EndTokensException{
+        exp_arim_logica2();
+        exp_somasub_logica();
+    }
+    
+    //<Operador_A1><Exp_Aritm_Logica2><Exp_SomaSub_Logica> | <>
+    private void exp_somasub_logica() throws EndTokensException{
+        if(igual(ver().getLexema(), "+", "-")){
+            consumir();
+            exp_arim_logica2();
+            exp_somasub_logica();
+        }        
+    }
+        
+    //<Numerico_Logico><Exp_MultDiv_Logica>
+    private void exp_arim_logica2() throws EndTokensException{
+        numero_logico();
+        exp_multdiv_logica();
+    }
+    
+    //<Operador_A2><Numerico_Logico><Exp_MultDiv_Logica> | <>
+    private void exp_multdiv_logica() throws EndTokensException{
+        if(igual(ver().getLexema(), "/", "*")){
+            consumir();
+            numero_logico();
+            exp_multdiv_logica();
+        }
+    }
+    
+    //'('<Exp_Aritm_Logica>')' | <Id_Vetor> | <Chamada_Funcao> | numero_t
+    private void numero_logico() throws EndTokensException{
+        if(ver().getLexema().equals("(")){
+            consumir();
+            exp_arim_logica();
+            if(ver().getLexema().equals(")")){
+                consumir();
+            }else{
+                //panico-)
+                erros.add(new Erro("(", ver()));
+                //nada
+            }
+        }else if(ver().getTipo().equals("identificador")){
+            if(verLLX(1).getLexema().equals("<<<"))
+                id_vetor();
+            else
+                chamada_funcao();
+        }else if(ver().getTipo().equals("numero"))
+            consumir();
+    }
     ////////////////////////    outros    /////////////////////////////
     
     // inteiro | real | booleano | cadeia | caractere
