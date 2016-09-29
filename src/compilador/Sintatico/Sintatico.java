@@ -96,29 +96,20 @@ public class Sintatico {
         //programa p
         try {
             if (ver().getLexema().equals("programa")){
-                //bloco
+                bloco();
                 consumir();
             }else{
                 erros.add(new Erro("programa", ver()));
                 sincronizar("inicio", ";", "sync1", "sync2", "sync3");//escolher tokens sync para programa
                 //sincronizar leitura com token que vai para bloco
                 if (ver().getLexema().equals("inicio")||ver().getLexema().equals(";")){//vericicar todos os tokens que vao pra bloco
-                    //bloco();
-                    consumir();
+                    bloco();                    
                 }
                 //sincronizar leitura com token que vai para funcao
                 else if (ver().getLexema().equals("funcao")){
-                    //funcao();
+                    //deixa apssar para ir pra funcoes ali em baixo
                 }
                 
-            }
-            if (ver().getLexema().equals("inicio")){
-                //bloco
-                consumir();
-            }
-            if (ver().getLexema().equals("fim")){
-                //bloco
-                consumir();
             }
         } catch (EndTokensException ex) {
             System.out.println(ex);
@@ -180,10 +171,6 @@ public class Sintatico {
         }
     }
 
-    // inteiro | real | booleano | cadeia | caractere
-    private boolean isTipo() throws EndTokensException{
-        return igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia");
-    }
     // <tipo> <R> <varlist2> | <>
     private void varlist() throws EndTokensException {
         if (igual(ver().getLexema(),"fim","programa","inicio")){
@@ -415,6 +402,118 @@ public class Sintatico {
                 const_decl2();
         }
     }
+    
+    ////////////////////////    Bloco      /////////////////////////////
+    
+    private void bloco() throws EndTokensException{
+        if(ver().getLexema().equals("inicio")){
+            consumir();
+            corpo_bloco();
+        }else{
+            //panico -inicio
+        }
+        if(ver().getLexema().equals("fim")){
+            consumir();
+        }else{
+            //panico -fim
+        }
+    }
+    //<Var_Local><Corpo_Bloco> | <Comando><Corpo_Bloco> 
+    // | <Chamada_Funcao>';'<Corpo_Bloco> | <Atribuicao><Corpo_Bloco> | <>
+    private void corpo_bloco() throws EndTokensException{
+        if (igual(ver().getLexema(),"fim", "funcao")){            
+            return;
+        }
+        if (igual(ver().getLexema(), "var","inteiro", "real", "booleano", "caractere", "cadeia")){
+            var_local();            
+        } else if (igual(ver().getLexema(), "escreva", "leia", "se", "enquanto")){
+            comando();
+        } else if (ver().getTipo().equals("identificador") ){
+            if (verLLX(1).getLexema().equals("(")){
+                chamada_funcao();
+                if(ver().getLexema().equals(";"))
+                    consumir();
+                else{
+                    //panico - ;
+                    //deixa passar somente ai corpo_bloco resolvera
+                }
+            }else{
+                atribuicao();
+            }
+        } else if (ver().getLexema().equals("(")){
+            //pode ser comandos ou chamada de funcao
+            erros.add(new Erro("identificador|comando", ver()));
+            sincronizar(";", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                    "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+                        
+        } else{
+            //sei nem que erro é que da aqui
+            // caractere inesperado?!?!
+            // panico para sincronizar com algo valido
+            erros.add(new Erro("Algum inicio de instrucao valida", ver()));
+            sincronizar(";", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                    "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+            
+        }
+        corpo_bloco();
+    }
+    ////////////////////////    variaveis locais    //////////////////////////
+    
+    //'var'<Tipo><Id_Vetor><Var_Local2>
+    private void var_local() throws EndTokensException{
+        if (ver().getLexema().equals("var")){
+            consumir();
+            if(isTipo()){
+                consumir();
+                id_vetor();
+                var_local2();
+            }else{
+                //panico -tipo
+                erros.add(new Erro("tipo", ver()));
+                sincronizar(";",",", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                    "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+                if(ver().getLexema().equals(","))
+                    var_local2();
+                //else so deixa passar
+            }
+        }else{
+            //panico -var
+            erros.add(new Erro("var", ver()));
+            //repetindo o que esta acima
+            if(isTipo()){
+                consumir();
+                id_vetor();
+                var_local2();
+            }else{
+                //panico -tipo
+                erros.add(new Erro("tipo", ver()));
+                sincronizar(";",",", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                    "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+                if(igual(ver().getLexema(),",", ";"))
+                    var_local2();
+                //else so deixa passar
+            }
+        }
+    }
+    
+    //','<Id_Vetor><Var_Local2> | ';'
+    private void var_local2() throws EndTokensException{
+        if (ver().getLexema().equals(",")){
+            consumir();
+            id_vetor();
+            var_local2();
+        }else if(ver().getLexema().equals(";")){
+            consumir();
+        }else{
+            //panico - , ou ;
+            erros.add(new Erro(",|;", ver()));
+            sincronizar(";",",", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                    "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+            if(igual(ver().getLexema(),",", ";"))
+                var_local2();
+                //else so deixa passar
+        }
+    }
 
     ////////////////////////    funcoes    /////////////////////////////
     private void funcao() {
@@ -428,7 +527,14 @@ public class Sintatico {
     private void exp_aritimetica() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
+    ////////////////////////    outros    /////////////////////////////
+    
+    // inteiro | real | booleano | cadeia | caractere
+    private boolean isTipo() throws EndTokensException{
+        return igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia");
+    }
+    // caractere | cadeia | numero | verdadeiro | falso
     private boolean isLiteral() throws EndTokensException {
         return igual(ver().getTipo(), "caractere", "cadeia", "numero")|| igual(ver().getLexema(), "verdadeiro", "falso");
     }
