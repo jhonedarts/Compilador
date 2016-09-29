@@ -5,7 +5,7 @@ fim
 
 const inicio
 inteiro a<<2, b<<4;
- x<< 3.2, a<<1;
+real x<< 3.2, a<<1;
 fim
 
 programa inicio 

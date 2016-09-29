@@ -121,7 +121,7 @@ public class Sintatico {
     private void funcoes(){
         try {
             System.out.println(ver().getLexema());// so pra checar se o arquivo acabou, se sim, dara a exception
-            funcao();// tratar fim de arquivo dentro desta tb, pois ai seria erro
+            funcao_decl();// tratar fim de arquivo dentro desta tb, pois ai seria erro
             funcoes();
         } catch (EndTokensException ex) {
             //fim de arquivo
@@ -234,19 +234,31 @@ public class Sintatico {
                 consumir();            
         }
     }
-    //'<<<'<Exp_Aritmetica>'>>>'<vetor> | <>
+    //'<<<'<Exp_Aritmetica><vetor2>'>>>' | <>
     private void vetor() throws EndTokensException {
         if(ver().getLexema().equals("<<<")){
             consumir();
-            exp_aritimetica(); // a fazer              
+            exp_aritimetica(); // a fazer   
+            vetor2();
             if(ver().getLexema().equals(">>>")){
-                consumir();
-                vetor();
+                consumir();                
             }else{
                 //panico
                 erros.add(new Erro(">>>",ver()));
+                sincronizar(">>>", ";");
+                if(ver().getLexema().equals(">>>"))
+                    consumir();
                 //só
             }
+        }
+    }
+    
+    //','<Exp_Aritmetica><Vetor2> | <>
+    private void vetor2() throws EndTokensException{
+        if(ver().getLexema().equals(",")){
+            consumir();
+            exp_aritimetica();
+            vetor2();
         }
     }
     
@@ -514,17 +526,130 @@ public class Sintatico {
                 //else so deixa passar
         }
     }
-
-    ////////////////////////    funcoes    /////////////////////////////
-    private void funcao() {
+    ////////////////////////    comandos    /////////////////////////////
+    
+    //<Escreva> | <Leia> | <Se> | <Enquanto>
+    private void comando(){
         
     }
-
+    ////////////////////////    atribuicao    /////////////////////////////
     
+    //<Id_Vetor>'<<'<Valor>';'
+    private void atribuicao() throws EndTokensException{
+        id_vetor();
+        if(ver().getLexema().equals("<<")){
+            consumir();
+            valor();
+            if(ver().getLexema().equals(";")){
+                erros.add(new Erro(";", ver()));
+                //nada
+            }
+        }else{
+            //panico -<<
+        }
+    }
+    
+    ////////////////////////    funcao    /////////////////////////////
+    
+    //'funcao'<Funcao_Decl2>id'('<Param_Decl_List>')'<Bloco>
+    private void funcao_decl() throws EndTokensException {
+        if(ver().getLexema().equals("funcao")){
+            consumir();
+            funcao_decl2();
+            if(ver().getTipo().equals("identificador")){
+                consumir();
+                if(ver().getLexema().equals("(")){
+                    consumir();
+                    param_decl_list();
+                    if(ver().getLexema().equals(")")){
+                        consumir();
+                        bloco();
+                    }else{
+                        //panico -)
+                    }
+                }else{
+                    //panico -(
+                }
+            }else{
+                //panico -id
+            }
+            //panico -funcao
+        }
+    }
+    
+    //<Tipo> | <>
+    private void funcao_decl2() throws EndTokensException{
+        if(isTipo())
+            consumir();
+    }
+    
+    //<Tipo><Id_Vetor><Param_Decl_List2> | <>
+    private void param_decl_list() throws EndTokensException{
+        if(isTipo()){
+            consumir();
+            id_vetor();
+            param_decl_list2();
+        }else{
+            //panico -tipo
+        }
+    }
+
+    //','<Tipo><Id_Vetor><Param_Decl_List2>
+    private void param_decl_list2() throws EndTokensException{
+        if(ver().getLexema().equals(",")){
+            consumir();
+            if(isTipo()){
+                consumir();
+                id_vetor();
+                param_decl_list2();
+            }else{
+                //panico -tipo
+            }
+        }else{
+            //panico -,
+        }
+    }
+    
+    //id'('<Param_Cham_List>')'
+    private void chamada_funcao() throws EndTokensException{
+        if(ver().getTipo().equals("identificador")){
+            consumir();
+            if(ver().getLexema().equals("(")){
+                consumir();
+                param_cham_list();
+            }else{
+                //panico -(
+            }
+        }else{
+            //panico -tipo
+        }
+    }
+    
+    //<Valor><Param_Cham_List2> | <>
+    private void param_cham_list() throws EndTokensException{
+        if(ver().getLexema().equals(")"))
+            return;
+        valor();
+        param_cham_list2();
+    }
+    
+    //','<Valor><Param_Cham_List2> | <>
+    private void param_cham_list2() throws EndTokensException{
+        if(ver().getLexema().equals(",")){
+            consumir();
+            valor();
+            param_cham_list2();            
+        }else{
+            //panico -,
+        }
+    }
     
     ////////////////////////    expressoes    /////////////////////////////
     
     private void exp_aritimetica() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    private void exp_logica() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
@@ -539,4 +664,22 @@ public class Sintatico {
         return igual(ver().getTipo(), "caractere", "cadeia", "numero")|| igual(ver().getLexema(), "verdadeiro", "falso");
     }
     
+    //vetor definido em variaveis
+    
+    //<Exp_Logica> | caractere_t | cadeia_t
+    private void valor() throws EndTokensException{
+        if (igual(ver().getTipo(),"caractere", "cadeia"))
+            consumir();
+        else
+            exp_logica();
+    }
+    
+    private void id_vetor() throws EndTokensException{
+        if(ver().getTipo().equals("identificador")){
+            consumir();
+            vetor();
+        }else{
+            //panico -id
+        }
+    }
 }
