@@ -77,7 +77,7 @@ public class Sintatico {
         }            
         return false;
     }
-    ///// BAGACEIRA //////
+    /////////////////////////    BAGACEIRA    //////////////////////////
     
     // var c | c
     private void programa(){
@@ -171,7 +171,7 @@ public class Sintatico {
         }
     }
 
-    // <tipo> <R> <varlist2> | <>
+    // <tipo> <R> <varlist> | <>
     private void varlist() throws EndTokensException {
         if (igual(ver().getLexema(),"fim","programa","inicio")){
             return;
@@ -197,11 +197,7 @@ public class Sintatico {
         } 
         
     }
-    // <varlist> | <>
-    private void varlist2() throws EndTokensException{
-        if(isTipo())
-            varlist();
-    }
+    
     //id <vetor> <R2>
     private void R() throws EndTokensException {
         if (ver().getTipo().equals("identificador")){
@@ -417,17 +413,28 @@ public class Sintatico {
     
     ////////////////////////    Bloco      /////////////////////////////
     
+    //'inicio'<Corpo_Bloco>'fim'
     private void bloco() throws EndTokensException{
         if(ver().getLexema().equals("inicio")){
             consumir();
             corpo_bloco();
         }else{
             //panico -inicio
+            erros.add(new Erro("inicio", ver()));
+            sincronizar("inicio","var","inteiro", "real", "booleano", "caractere", "cadeia",
+                    "escreva", "leia", "se", "enquanto", "identificador", "fim", "(");
+            if(ver().getLexema().equals("inicio"))
+                consumir();
+            corpo_bloco();
         }
         if(ver().getLexema().equals("fim")){
             consumir();
         }else{
             //panico -fim
+            erros.add(new Erro("fim", ver()));
+            sincronizar("fim", "funcao", "inicio");
+            if(ver().getLexema().equals("fim"))
+                consumir();
         }
     }
     //<Var_Local><Corpo_Bloco> | <Comando><Corpo_Bloco> 
@@ -541,11 +548,21 @@ public class Sintatico {
             consumir();
             valor();
             if(ver().getLexema().equals(";")){
+                consumir();
+            }else{
+                //panico -;
                 erros.add(new Erro(";", ver()));
-                //nada
+                //nada, retorna pra camada superior (corpo_bloco)
             }
         }else{
             //panico -<<
+            erros.add(new Erro("<<", ver()));
+            sincronizar("<<", ";");
+            if(ver().getLexema().equals("<<")){
+                consumir();
+                valor();
+            }else
+                consumir();
         }
     }
     
@@ -566,14 +583,62 @@ public class Sintatico {
                         bloco();
                     }else{
                         //panico -)
+                        erros.add(new Erro(")", ver()));
+                        sincronizar(")", "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                                        "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+                        if(ver().getLexema().equals(")"))
+                            consumir();
+                        bloco();
                     }
                 }else{
                     //panico -(
+                    erros.add(new Erro("(", ver()));
+                    sincronizar("inteiro", "real", "booleano", "caractere", "cadeia", "identificador",
+                            "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                            "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+                    if (ver().getLexema().equals("(")){
+                        consumir();
+                        param_decl_list();
+                    }else if(igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia"))
+                        param_decl_list();
+                    else if (igual(ver().getTipo(),"identificador")){
+                        consumir();
+                        param_decl_list();
+                    }else
+                        bloco();
                 }
             }else{
                 //panico -id
+                erros.add(new Erro("identificador", ver()));
+                sincronizar("inteiro", "real", "booleano", "caractere", "cadeia", "identificador",
+                            "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                            "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+                if (ver().getLexema().equals("(")){
+                    consumir();
+                    param_decl_list();
+                }else if(igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia"))
+                    param_decl_list();
+                else if (igual(ver().getTipo(),"identificador")){
+                    consumir();
+                    param_decl_list();
+                }else
+                    bloco();
             }
             //panico -funcao
+            erros.add(new Erro("funcao", ver()));
+            sincronizar("inteiro", "real", "booleano", "caractere", "cadeia", "identificador",
+                            "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                            "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+            if (ver().getLexema().equals("(")){
+                consumir();
+                param_decl_list();
+            }else if(igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia"))
+                funcao_decl2();
+            else if (igual(ver().getTipo(),"identificador")){
+                consumir();
+                param_decl_list();
+            }else
+                bloco();
         }
     }
     
@@ -585,17 +650,27 @@ public class Sintatico {
     
     //<Tipo><Id_Vetor><Param_Decl_List2> | <>
     private void param_decl_list() throws EndTokensException{
+        if(igual(ver().getLexema(), "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                                "escreva", "leia", "se", "enquanto", "(", "fim", "funcao"))
+            return;
         if(isTipo()){
             consumir();
             id_vetor();
             param_decl_list2();
         }else{
             //panico -tipo
+            erros.add(new Erro("tipo", ver()));
+            sincronizar( "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                                "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");            
+            //nada
         }
     }
 
-    //','<Tipo><Id_Vetor><Param_Decl_List2>
+    //','<Tipo><Id_Vetor><Param_Decl_List2> | <>
     private void param_decl_list2() throws EndTokensException{
+        if(igual(ver().getLexema(), ")", "inicio", "var", 
+                                        "escreva", "leia", "se", "enquanto", "(", "fim", "funcao"))
+            return;
         if(ver().getLexema().equals(",")){
             consumir();
             if(isTipo()){
@@ -604,9 +679,24 @@ public class Sintatico {
                 param_decl_list2();
             }else{
                 //panico -tipo
+                erros.add(new Erro(",", ver()));
+                sincronizar(",", "inteiro", "real", "booleano", "caractere", "cadeia", ")", "inicio", "var", 
+                                            "escreva", "leia", "se", "enquanto", "(", "fim", "funcao");
+                if (igual(ver().getLexema(),",")){
+                    param_decl_list2();
+                }
             }
         }else{
             //panico -,
+            erros.add(new Erro(",", ver()));
+            sincronizar("inteiro", "real", "booleano", "caractere", "cadeia", ")", "inicio", "var", 
+                                        "escreva", "leia", "se", "enquanto", "(", "fim", "funcao");
+            if (igual(ver().getLexema(), "inteiro", "real", "booleano", "caractere", "cadeia")){
+                consumir();
+                id_vetor();
+                param_decl_list2();
+            }
+            //else nada
         }
     }
     
@@ -614,15 +704,25 @@ public class Sintatico {
     private void chamada_funcao() throws EndTokensException{
         if(ver().getTipo().equals("identificador")){
             consumir();
-            if(ver().getLexema().equals("(")){
-                consumir();
-                param_cham_list();
-            }else{
-                //panico -(
-            }
         }else{
             //panico -tipo
+            erros.add(new Erro("tipo", ver()));
         }
+        if(ver().getLexema().equals("(")){
+            consumir();
+            param_cham_list();
+        }else{
+            //panico -(
+            erros.add(new Erro("(", ver()));
+            sincronizar("(", ")", "identificador", "numero", ",",";", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+            if(igual(ver().getLexema(), ",", "(")){
+                consumir();
+                param_cham_list();
+            }
+            //else nada
+        }
+        
     }
     
     //<Valor><Param_Cham_List2> | <>
@@ -635,12 +735,23 @@ public class Sintatico {
     
     //','<Valor><Param_Cham_List2> | <>
     private void param_cham_list2() throws EndTokensException{
+        if(igual(ver().getLexema(), ")", "inicio", "var", 
+                                        "escreva", "leia", "se", "enquanto", "(", "fim", "funcao"))
+            return;
         if(ver().getLexema().equals(",")){
             consumir();
             valor();
             param_cham_list2();            
         }else{
             //panico -,
+            erros.add(new Erro(",", ver()));
+            sincronizar("identificador", "numero", "caractere", "cadeia", ")", "inicio", "var", 
+                                        "escreva", "leia", "se", "enquanto", "(", "fim", "funcao");
+            if (igual(ver().getLexema(), "identificador", "numero", "caractere", "cadeia")){
+                valor();
+                param_cham_list2();
+            }
+            //else nada
         }
     }
     
@@ -673,13 +784,20 @@ public class Sintatico {
         else
             exp_logica();
     }
-    
-    private void id_vetor() throws EndTokensException{
+    //id<Vetor>
+    private void id_vetor() throws EndTokensException{        
         if(ver().getTipo().equals("identificador")){
             consumir();
             vetor();
         }else{
             //panico -id
+            erros.add(new Erro("identificador", ver()));
+            sincronizar("<<<", ";",",", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                    "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
+            if (ver().getLexema().equals("<<<")){
+                consumir();
+                vetor();
+            }
         }
     }
 }
