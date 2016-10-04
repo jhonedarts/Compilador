@@ -1,0 +1,53 @@
+1 var palavra reservada
+1 inicio palavra reservada
+2 inteiro identificador
+2 a identificador
+2 , delimitador
+2 b identificador
+2 , delimitador
+2 c identificador
+2 ; delimitador
+3 real palavra reservada
+3 b identificador
+3 , delimitador
+3 c identificador
+3 ; delimitador
+4 fim palavra reservada
+6 const palavra reservada
+6 inicio palavra reservada
+7 inteiro identificador
+7 a identificador
+7 << delimitador
+7 2 numero
+7 , delimitador
+7 b identificador
+7 << delimitador
+7 4 numero
+7 ; delimitador
+8 real palavra reservada
+8 x identificador
+8 << delimitador
+8 3.2 numero
+8 , delimitador
+8 a identificador
+8 << delimitador
+8 1 numero
+8 ; delimitador
+9 fim palavra reservada
+11 programa palavra reservada
+11 inicio palavra reservada
+12 fim palavra reservada
+14 funcao palavra reservada
+14 inteiro identificador
+14 abacate identificador
+14 ( delimitador
+14 inteiro identificador
+14 i identificador
+14 ) delimitador
+14 inicio palavra reservada
+15 abacate identificador
+15 << delimitador
+15 i identificador
+15 ; delimitador
+16 fim palavra reservada
+

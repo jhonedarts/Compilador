@@ -44,16 +44,16 @@ public class Sintatico {
             System.out.println("Sucesso!");
         else{
             for(Erro error: erros){
-                System.out.println("Esperava \""+error.getEsperado()+"\" mas obteve \""+error.getObtido()+"\" na linha: "+error.getLinha());
+                System.out.println("Esperava \""+error.getEsperado()+"\" mas obteve \""+error.getObtido()+"\" na linha: "+error.getLinha());               
             }
         }
         
         //gravar no txt
-        File file = new File(nomeArq+"_saida.txt");
+        File file = new File("saida/"+nomeArq+"_sintatico.txt");
 
         if (!file.exists()){
-            new File(nomeArq+"_saida.txt").createNewFile();
-            file = new File(nomeArq+"_saida.txt");
+            new File("saida/"+nomeArq+"_sintatico.txt").createNewFile();
+            file = new File("saida/"+nomeArq+"_sintatico.txt");
         }
 
         PrintWriter gravarArq = new PrintWriter(new FileWriter(file));
@@ -61,7 +61,7 @@ public class Sintatico {
             gravarArq.printf("Sucesso!%n");
         else{
             for(Erro error: erros){
-                gravarArq.printf(error.getLinha()+" Esperava \""+error.getEsperado()+"\" mas obteve \""+error.getObtido()+"%n");
+                gravarArq.printf(error.getLinha()+" Esperava \""+error.getEsperado()+"\" mas obteve \""+error.getObtido()+"\"%n");
             }
         }
         gravarArq.close();
@@ -921,7 +921,7 @@ public class Sintatico {
     
     //<Tipo><Id_Vetor><Param_Decl_List2> | <>
     private void param_decl_list() throws EndTokensException{
-        if(igual(ver().getLexema(), "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+        if(igual(ver().getLexema(), "inicio", "var", 
                                 "escreva", "leia", "se", "enquanto", "(", "fim", "funcao"))
             return;
         if(isTipo()){
@@ -1113,6 +1113,7 @@ public class Sintatico {
     //'nao'<Valor_Booleano> | <Valor_Booleano>
     private void exp_nao() throws EndTokensException{
         if(ver().getLexema().equals("nao")){
+            consumir();
             valor_booleano();
         }else
             valor_booleano();
@@ -1179,7 +1180,7 @@ public class Sintatico {
                 consumir();
             }else{
                 //panico-)
-                erros.add(new Erro("(", ver()));
+                erros.add(new Erro(")", ver()));
                 //nada
             }
         }else if(ver().getTipo().equals("identificador")){

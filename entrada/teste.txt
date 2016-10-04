@@ -1,6 +1,6 @@
 var inicio
 inteiro a, b, c;
- b, c;
+real b, c;
 fim
 
 const inicio
@@ -9,4 +9,8 @@ real x<< 3.2, a<<1;
 fim
 
 programa inicio 
+fim
+
+funcao inteiro abacate (inteiro i) inicio
+abacate << i;
 fim

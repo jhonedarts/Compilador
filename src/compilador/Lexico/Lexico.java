@@ -197,11 +197,11 @@ public class Lexico {
 
         //gravar no txt
         arqSaida = arqSaida.split(".txt")[0];
-        File file = new File(arqSaida+"_saida.txt");
+        File file = new File(arqSaida+"_lexico.txt");
 
         if (!file.exists()){
-            new File(arqSaida+"_saida.txt").createNewFile();
-            file = new File(arqSaida+"_saida.txt");
+            new File(arqSaida+"_lexico.txt").createNewFile();
+            file = new File(arqSaida+"_lexico.txt");
         }
 
         PrintWriter gravarArq = new PrintWriter(new FileWriter(file));
