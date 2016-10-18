@@ -224,6 +224,9 @@ public class Sintatico {
     //id <vetor> <R2>
     private void R() throws EndTokensException {
         if (ver().getTipo().equals("identificador")){
+//--------coletar ids antes de consumir em uma lista e verificar se ele ja existe, se sim é um erro semantico --------------------------semantico
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------------------------
             consumir();
             vetor();
             R2();
@@ -352,9 +355,16 @@ public class Sintatico {
     //id'<<'<Literal><Const_Decl2>
     private void const_decl() throws EndTokensException{
         if(ver().getTipo().equals("identificador")){
+//--------coletar ids antes de consumir em uma lista e verificar se ele ja existe, se sim é um erro semantico --------------------------semantico
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+
             consumir();  
             if(ver().getLexema().equals("<<")){
                 consumir(); 
+//--------passar o tipo consumido em const_list para esta funcao e comparar com o tipo do literal --------------------------------------semantico
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------------------------
                 if(isLiteral()){
                     consumir();
                     const_decl2();
@@ -463,6 +473,7 @@ public class Sintatico {
     //<Var_Local><Corpo_Bloco> | <Comando><Corpo_Bloco> 
     // | <Chamada_Funcao>';'<Corpo_Bloco> | <Atribuicao><Corpo_Bloco> | <>
     private void corpo_bloco() throws EndTokensException{
+        System.out.println("corpo_bloco");
         if (igual(ver().getLexema(),"fim", "funcao")){            
             return;
         }
@@ -575,7 +586,7 @@ public class Sintatico {
         }        
     }
     
-    //<Escreva> ::= 'escreva''('<Escreva_Params>')'';'
+    //'escreva''('<Escreva_Params>')'';'
     private void escreva(){
         try {
             if (ver().getLexema().equals("escreva")){               
@@ -589,6 +600,14 @@ public class Sintatico {
                         erros.add(new Erro(")", ver()));
                         sincronizar(";");
                         consumir();
+                    }
+                    if(ver().getLexema().equals(";"))
+                        consumir();
+                    else{
+                        erros.add(new Erro(";", ver()));
+                        sincronizar("inteiro", "real", "booleano", "caractere", "cadeia", "identificador",
+                                "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                                "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
                     }
                 }else{
                     erros.add(new Erro("(", ver()));
@@ -627,41 +646,45 @@ public class Sintatico {
         if(ver().getLexema().equals(","))
             escreva_params();    
     }
-    //<Leia> ::= 'leia''('<Leia_Params>')'';'
+    //'leia''('<Leia_Params>')'';'
     
-    private void leia(){
-        try {
-            if (ver().getLexema().equals("leia")){               
+    private void leia() throws EndTokensException{
+        if (ver().getLexema().equals("leia")){               
+            consumir();
+            if(ver().getLexema().equals("(")){
                 consumir();
-                if(ver().getLexema().equals("(")){
+                leia_params();
+                if(ver().getLexema().equals(")"))
                     consumir();
-                    leia_params();
-                    if(ver().getLexema().equals(")"))
-                        consumir();
-                    else{
-                        erros.add(new Erro(")", ver()));
-                        sincronizar(";");
-                        consumir();
-                    }
-                }else{
-                    erros.add(new Erro("(", ver()));
+                else{
+                    erros.add(new Erro(")", ver()));
                     sincronizar(";");
                     consumir();
                 }
-            }else{
-                erros.add(new Erro("leia", ver()));
-                sincronizar("(", ";");     
-                if (ver().getLexema().equals("(")){
+                if(ver().getLexema().equals(";"))
                     consumir();
-                    escreva_params();
+                else{
+                    erros.add(new Erro(";", ver()));
+                    sincronizar("inteiro", "real", "booleano", "caractere", "cadeia", "identificador",
+                            "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                            "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
                 }
-                else
-                    consumir();
-                //deixa passar                    
+            }else{
+                erros.add(new Erro("(", ver()));
+                sincronizar(";");
+                consumir();
             }
-        } catch (EndTokensException ex) {
-            System.out.println(ex);
-        } 
+        }else{
+            erros.add(new Erro("leia", ver()));
+            sincronizar("(", ";");     
+            if (ver().getLexema().equals("(")){
+                consumir();
+                escreva_params();
+            }
+            else
+                consumir();
+            //deixa passar                    
+        }         
     }
     
     //<Id_Vetor><Leia_Param2>
@@ -993,14 +1016,18 @@ public class Sintatico {
             }
             //else nada
         }
+        if(ver().getLexema().equals(")"))
+            consumir();
         
     }
     
     //<Valor><Param_Cham_List2> | <>
     private void param_cham_list() throws EndTokensException{
+        System.out.println(ver().getLexema()+" param_cham_list");
         if(ver().getLexema().equals(")"))
             return;
         valor();
+        System.out.println(ver().getLexema()+" param_cham_list2");
         param_cham_list2();
     }
     
@@ -1129,7 +1156,9 @@ public class Sintatico {
     
     //<Exp_Aritm_Logica><Exp_Relacional2>
     private void exp_relacional() throws EndTokensException{
+        System.out.println(ver().getLexema()+" exp_relacional");
         exp_arim_logica();
+        System.out.println(ver().getLexema()+" exp_relacional 2");
         exp_relacional2();
     }
     
@@ -1184,10 +1213,10 @@ public class Sintatico {
                 //nada
             }
         }else if(ver().getTipo().equals("identificador")){
-            if(verLLX(1).getLexema().equals("<<<"))
-                id_vetor();
+            if(verLLX(1).getLexema().equals("("))
+                chamada_funcao();                
             else
-                chamada_funcao();
+                id_vetor();
         }else if(ver().getTipo().equals("numero"))
             consumir();
     }
@@ -1206,6 +1235,7 @@ public class Sintatico {
     
     //<Exp_Logica> | caractere_t | cadeia_t
     private void valor() throws EndTokensException{
+        System.out.println(ver().getLexema()+" valor");
         if (igual(ver().getTipo(),"caractere", "cadeia"))
             consumir();
         else

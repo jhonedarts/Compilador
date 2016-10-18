@@ -9,8 +9,11 @@ real x<< 3.2, a<<1;
 fim
 
 programa inicio 
+a << a+b;
+leia (a);
+escreva (a);
 fim
 
 funcao inteiro abacate (inteiro i) inicio
-abacate << i;
+abacate << b(a*b/(a+5*4*(2+2)));
 fim

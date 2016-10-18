@@ -36,18 +36,53 @@
 9 fim palavra reservada
 11 programa palavra reservada
 11 inicio palavra reservada
-12 fim palavra reservada
-14 funcao palavra reservada
-14 inteiro identificador
-14 abacate identificador
+12 a identificador
+12 << delimitador
+12 a identificador
+12 + operador aritimetico
+12 b identificador
+12 ; delimitador
+13 leia palavra reservada
+13 ( delimitador
+13 a identificador
+13 ) delimitador
+13 ; delimitador
+14 escreva palavra reservada
 14 ( delimitador
-14 inteiro identificador
-14 i identificador
+14 a identificador
 14 ) delimitador
-14 inicio palavra reservada
-15 abacate identificador
-15 << delimitador
-15 i identificador
-15 ; delimitador
-16 fim palavra reservada
+14 ; delimitador
+15 fim palavra reservada
+17 funcao palavra reservada
+17 inteiro identificador
+17 abacate identificador
+17 ( delimitador
+17 inteiro identificador
+17 i identificador
+17 ) delimitador
+17 inicio palavra reservada
+18 abacate identificador
+18 << delimitador
+18 b identificador
+18 ( delimitador
+18 a identificador
+18 * operador aritimetico
+18 b identificador
+18 / operador aritimetico
+18 ( delimitador
+18 a identificador
+18 + operador aritimetico
+18 5 numero
+18 * operador aritimetico
+18 4 numero
+18 * operador aritimetico
+18 ( delimitador
+18 2 numero
+18 + operador aritimetico
+18 2 numero
+18 ) delimitador
+18 ) delimitador
+18 ) delimitador
+18 ; delimitador
+19 fim palavra reservada
 

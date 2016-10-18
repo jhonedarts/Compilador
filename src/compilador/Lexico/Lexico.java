@@ -36,8 +36,8 @@ public class Lexico {
     
     public LinkedList<Token> start(File fileIN) throws IOException{
         LinkedList<Token> tokensList = new LinkedList();
-        System.out.println("----------------- Analise Lexica -----------------\n");
-        System.out.println("File: " + fileIN.getName());
+        //System.out.println("----------------- Analise Lexica -----------------\n");
+        //System.out.println("File: " + fileIN.getName());
         arqSaida = arqSaida.concat(fileIN.getName());
 
         TokenTipo analisador = new TokenTipo();
@@ -55,16 +55,16 @@ public class Lexico {
             if(!comentario)//nao reseto o valor ate fechar o comentario
                 lexema = null;
 
-            System.out.println("linha:\n"+line);
-            System.out.println(line.length());
+            //System.out.println("linha:\n"+line);
+            //System.out.println(line.length());
             //separação dos tokens da linha
             for (int i=0; i<line.length(); i++){
                 if (comentario){  
-                    System.out.println(i+" coment");
+                    //System.out.println(i+" coment");
                     if (line.charAt(i)=='}'){                        
                         comentario = false;
                         lexema = lexema.concat(line.charAt(i)+"");                        
-                        System.out.println(lexema);
+                        //System.out.println(lexema);
                         Token token = analisador.analise(lexema);
                         token.setColuna(v);
                         token.setLinha(linha);
@@ -78,7 +78,7 @@ public class Lexico {
                     // delimitadores unitários
                     if (delimitadoresUnitarios.contains(a+"")){
                         lexema = a+"";
-                        System.out.println(i+"unitario");
+                        //System.out.println(i+"unitario");
                     }
 
                     else if(delimitadoresEspeciais.contains(a+"")){//sao binarios
@@ -102,7 +102,7 @@ public class Lexico {
                                 i+=2; v+=2;
                                 lexema = lexema.concat(line.charAt(i-1)+""+line.charAt(i));                                        
                             }
-                            System.out.println(i+"<>");
+                            //System.out.println(i+"<>");
                         }catch(StringIndexOutOfBoundsException ex){//pro caso de " nao ser fechada
 
                         }
@@ -113,7 +113,7 @@ public class Lexico {
                                 while(!delimitadores.contains(line.charAt(i+1)+"")){   
                                     i++; v++;
                                    lexema = lexema.concat(line.charAt(i)+""); 
-                                   System.out.println(i+"-");
+                                   //System.out.println(i+"-");
                                 }          
                             }
                         }catch(StringIndexOutOfBoundsException ex){//pro caso de " nao ser fechada
@@ -122,17 +122,17 @@ public class Lexico {
                     //caractere
                     }else if (a == '\''){
                         lexema = a+"";
-                        System.out.println(i+"'");
+                        //System.out.println(i+"'");
                         try {
                             while(!(line.charAt(i+1) == '\'' || line.charAt(i+1) == ' ' || tabulacao.contains(line.charAt(i+1)+""))){   
                                 i++; v++;
                                lexema = lexema.concat(line.charAt(i)+"");    
-                               System.out.println(i+"'");
+                               //System.out.println(i+"'");
                             }
                             if (line.charAt(i+1) == '\''){
                                 i++; v++;
                                lexema = lexema.concat(line.charAt(i)+"");
-                               System.out.println(i+"'");
+                               //System.out.println(i+"'");
                             }
                         }catch(StringIndexOutOfBoundsException ex){//pro caso de ' ser a ultima coisa do arquivo
 
@@ -140,16 +140,16 @@ public class Lexico {
                     //cadeia de caractere  
                     }else if (a == '"'){
                         lexema = a+"";
-                        System.out.println(i+"\"");
+                        //System.out.println(i+"\"");
                         try{
                             while(!(line.charAt(i+1) == '"' || tabulacao.contains(line.charAt(i+1)+""))){   
                                 i++; v++;
-                                System.out.println(i+"\"");
+                                //System.out.println(i+"\"");
                                lexema = lexema.concat(line.charAt(i)+"");                                              
                             }
                             if (line.charAt(i+1) == '"'){
                                 i++; v++;
-                                System.out.println(i+"\"");
+                                //System.out.println(i+"\"");
                                lexema = lexema.concat(line.charAt(i)+"");
                             }
                         }catch(StringIndexOutOfBoundsException ex){//pro caso de " nao ser fechada
@@ -163,7 +163,7 @@ public class Lexico {
                     }else if (a=='}'){//caractere perdido
                         lexema = a+"";
                     }else if(tabulacao.contains(a+"") || a==' '){
-                        System.out.println(i+" space");
+                        //System.out.println(i+" space");
                         lexema = null;//so pra nao entra na formação do token, sera reiniciado no inicio do for
                     }
                     //qualquer coisa que vier
@@ -184,9 +184,9 @@ public class Lexico {
 
                     //lexema formado se nao for comentario ou tabulacao
                     if (!comentario && lexema!=null){
-                        System.out.println(lexema);
+                        //System.out.println(lexema);
                         Token token = analisador.analise(lexema);
-                        System.out.println(" token formado: "+lexema);                        
+                        //System.out.println(" token formado: "+lexema);                        
                         token.setColuna(i-v);
                         token.setLinha(linha);
                         tokensList.add(token);
@@ -209,23 +209,23 @@ public class Lexico {
         LinkedList<Token> errosList = new LinkedList();
         //escrevendo no txt
         //gravarArq.printf("Tabela de Simbolos:%n%nn# | lexema - tipo | linha%n");   
-        //System.out.println("Tabela de Simbolos:\n\nn# | lexema - tipo | linha");
+        ////System.out.println("Tabela de Simbolos:\n\nn# | lexema - tipo | linha");
         for(int i=0; i<tokensList.size();i++){
             Token t= tokensList.get(i);
             if(t.isValido()){
                 gravarArq.printf(t.getLinha()+" "+t.getLexema()+" "+t.getTipo()+"%n");
-                System.out.println(t.getLinha()+" "+t.getLexema()+" "+t.getTipo());
+                //System.out.println(t.getLinha()+" "+t.getLexema()+" "+t.getTipo());
             }else
                 errosList.add(t);
         }        
         //gravarArq.printf("%n%nTabela de Erros:%n%nn# | lexema | tipo | linha%n");
         gravarArq.printf("%n");
-        //System.out.println("\n\nTabela de Erros:\n\nn# | lexema | tipo | linha");
-        System.out.println();
+        ////System.out.println("\n\nTabela de Erros:\n\nn# | lexema | tipo | linha");
+        //System.out.println();
         for(int i=0; i<errosList.size();i++){
             Token t= errosList.get(i);
             gravarArq.printf(t.getLinha()+" "+t.getLexema()+" "+t.getTipo()+" "+"%n");
-            System.out.println(t.getLinha()+" "+t.getLexema()+" "+t.getTipo());
+            //System.out.println(t.getLinha()+" "+t.getLexema()+" "+t.getTipo());
         }
         gravarArq.close();
          
