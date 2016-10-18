@@ -571,74 +571,74 @@ public class Sintatico {
     
     //<Escreva> | <Leia> | <Se> | <Enquanto>
     private void comando() throws EndTokensException{              
-        if (ver().getLexema().equals("Escreva")){
+        if (ver().getLexema().equals("escreva")){
             escreva();
         }
 
         else if(ver().getLexema().equals("leia")){
             leia();
         }
-        else if (ver().getLexema().equals("Enquanto")){
+        else if (ver().getLexema().equals("se")){
             se();
         }
-        else if (ver().getLexema().equals("Enquanto")){
+        else if (ver().getLexema().equals("enquanto")){
             enquanto();
         }        
     }
     
     //'escreva''('<Escreva_Params>')'';'
-    private void escreva(){
-        try {
-            if (ver().getLexema().equals("escreva")){               
+    private void escreva() throws EndTokensException{
+        if (ver().getLexema().equals("escreva")){               
+            consumir();
+            if(ver().getLexema().equals("(")){
                 consumir();
-                if(ver().getLexema().equals("(")){
+                escreva_params();
+                if(ver().getLexema().equals(")"))
                     consumir();
-                    escreva_params();
-                    if(ver().getLexema().equals(")"))
-                        consumir();
-                    else{
-                        erros.add(new Erro(")", ver()));
-                        sincronizar(";");
-                        consumir();
-                    }
-                    if(ver().getLexema().equals(";"))
-                        consumir();
-                    else{
-                        erros.add(new Erro(";", ver()));
-                        sincronizar("inteiro", "real", "booleano", "caractere", "cadeia", "identificador",
-                                "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
-                                "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
-                    }
-                }else{
-                    erros.add(new Erro("(", ver()));
+                else{
+                    erros.add(new Erro(")", ver()));
                     sincronizar(";");
                     consumir();
                 }
-            }else{
-                erros.add(new Erro("escreva", ver()));
-                sincronizar("(", ";");     
-                if (igual(ver().getLexema(), "(")){
+                if(ver().getLexema().equals(";"))
                     consumir();
-                    escreva_params();
+                else{
+                    erros.add(new Erro(";", ver()));
+                    sincronizar("inteiro", "real", "booleano", "caractere", "cadeia", "identificador",
+                            "inicio", "var","inteiro", "real", "booleano", "caractere", "cadeia", 
+                            "escreva", "leia", "se", "enquanto", "identificador", "(", "fim", "funcao");
                 }
-                else 
-                    consumir();
-                //deixa passar                    
+            }else{
+                erros.add(new Erro("(", ver()));
+                sincronizar(";");
+                consumir();
             }
-        } catch (EndTokensException ex) {
-            System.out.println(ex);
-        } 
+        }else{
+            erros.add(new Erro("escreva", ver()));
+            sincronizar("(", ";");     
+            if (igual(ver().getLexema(), "(")){
+                consumir();
+                escreva_params();
+            }
+            else 
+                consumir();
+            //deixa passar                    
+        }        
     }
     //<Exp_Aritmetica><Escreva_Param2> | caractere_t<Escreva_Param2> | cadeia_t<Escreva_Param2>
     private void escreva_params() throws EndTokensException{
-        if( (ver().getTipo().equals("identificador")||ver().getTipo().equals("numero")) &&(verLLX(1).getLexema().equals(","))){
+        System.out.println(ver().getLexema()+" escreva_params");
+        if(ver().getTipo().equals("cadeia")){
             consumir();
             escreva_params2();
         }//<Valor_Numerico> ::= '('<Exp_Aritmetica>')' | <Id_Vetor> | <Chamada_Funcao> | numero_t
-        else if (ver().getLexema().equals(")"))
-            erros.add(new Erro(")", ver()));
-        else
-           exp_aritmetica(); 
+        else if(ver().getTipo().equals("caractere")){
+            consumir();
+            escreva_params2();
+        }else{
+            exp_aritmetica(); 
+            escreva_params2();
+        }
     }
 
     //<Escreva_Param2> ::= ','<Escreva_Params> | <>
@@ -705,7 +705,7 @@ public class Sintatico {
         }     
     }
     
-    //<Se> ::= 'se''('<Exp_Logica>')''entao'<Bloco><Senao>
+    //'se''('<Exp_Logica>')''entao'<Bloco><Senao>
     private void se() throws EndTokensException {
         if (ver().getLexema().equals("se")){
             consumir();
@@ -718,17 +718,13 @@ public class Sintatico {
                         consumir();
                         bloco();
                         senao();
-                        erros.add(new Erro("entao", ver()));
-                        sincronizar(";");
-                    }
-                    else{
+                    }else{
                         erros.add(new Erro("entao", ver()));
                         sincronizar(";", "inicio");
                         bloco();
                         senao();
                     }
-                }
-                else{
+                }else{
                     erros.add(new Erro(")", ver()));
                     sincronizar("entao", ";", "inicio");
                     if(ver().getLexema().equals(")")){
@@ -737,8 +733,7 @@ public class Sintatico {
                             consumir();
                             bloco();
                             senao();
-                        }
-                        else{
+                        }else{
                             erros.add(new Erro("entao", ver()));
                             sincronizar(";", "inicio");
                             bloco();
@@ -1098,10 +1093,10 @@ public class Sintatico {
                 //nada
             }
         }else if(ver().getTipo().equals("identificador")){
-            if(verLLX(1).getLexema().equals("<<<"))                
-                id_vetor();
-            else
+            if(verLLX(1).getLexema().equals("("))                
                 chamada_funcao();
+            else
+                id_vetor();
         }else if (ver().getTipo().equals("numero"))
             consumir();
             
@@ -1139,6 +1134,7 @@ public class Sintatico {
     
     //'nao'<Valor_Booleano> | <Valor_Booleano>
     private void exp_nao() throws EndTokensException{
+        System.out.println(ver().getLexema()+" nao");
         if(ver().getLexema().equals("nao")){
             consumir();
             valor_booleano();
@@ -1158,12 +1154,12 @@ public class Sintatico {
     private void exp_relacional() throws EndTokensException{
         System.out.println(ver().getLexema()+" exp_relacional");
         exp_arim_logica();
-        System.out.println(ver().getLexema()+" exp_relacional 2");
         exp_relacional2();
     }
     
     //<Operador_Relacional><Exp_Aritm_Logica> | <>
     private void exp_relacional2() throws EndTokensException{
+        System.out.println(ver().getLexema()+" exp_relacional 2");
         if(igual(ver().getLexema(), "<", "<=", ">", ">=", "<>", "=")){
             consumir();
             exp_arim_logica();
@@ -1202,9 +1198,11 @@ public class Sintatico {
     
     //'('<Exp_Aritm_Logica>')' | <Id_Vetor> | <Chamada_Funcao> | numero_t
     private void numero_logico() throws EndTokensException{
+        System.out.println(ver().getLexema()+" numero_logico");
         if(ver().getLexema().equals("(")){
             consumir();
             exp_arim_logica();
+            System.out.println(ver().getLexema()+" -------------------------------------------");
             if(ver().getLexema().equals(")")){
                 consumir();
             }else{

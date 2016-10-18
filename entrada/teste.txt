@@ -12,6 +12,12 @@ programa inicio
 a << a+b;
 leia (a);
 escreva (a);
+
+se (verdadeiro) entao
+	xurupitas << 20;
+senao
+	xurupitas << 17;
+
 fim
 
 funcao inteiro abacate (inteiro i) inicio

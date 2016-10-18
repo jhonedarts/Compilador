@@ -52,37 +52,51 @@
 14 a identificador
 14 ) delimitador
 14 ; delimitador
-15 fim palavra reservada
-17 funcao palavra reservada
-17 inteiro identificador
-17 abacate identificador
-17 ( delimitador
-17 inteiro identificador
-17 i identificador
-17 ) delimitador
-17 inicio palavra reservada
-18 abacate identificador
-18 << delimitador
-18 b identificador
-18 ( delimitador
-18 a identificador
-18 * operador aritimetico
-18 b identificador
-18 / operador aritimetico
-18 ( delimitador
-18 a identificador
-18 + operador aritimetico
-18 5 numero
-18 * operador aritimetico
-18 4 numero
-18 * operador aritimetico
-18 ( delimitador
-18 2 numero
-18 + operador aritimetico
-18 2 numero
-18 ) delimitador
-18 ) delimitador
-18 ) delimitador
-18 ; delimitador
-19 fim palavra reservada
+16 se palavra reservada
+16 ( delimitador
+16 verdadeiro palavra reservada
+16 ) delimitador
+16 entao palavra reservada
+17 xurupitas identificador
+17 << delimitador
+17 20 numero
+17 ; delimitador
+18 senao palavra reservada
+19 xurupitas identificador
+19 << delimitador
+19 17 numero
+19 ; delimitador
+21 fim palavra reservada
+23 funcao palavra reservada
+23 inteiro identificador
+23 abacate identificador
+23 ( delimitador
+23 inteiro identificador
+23 i identificador
+23 ) delimitador
+23 inicio palavra reservada
+24 abacate identificador
+24 << delimitador
+24 b identificador
+24 ( delimitador
+24 a identificador
+24 * operador aritimetico
+24 b identificador
+24 / operador aritimetico
+24 ( delimitador
+24 a identificador
+24 + operador aritimetico
+24 5 numero
+24 * operador aritimetico
+24 4 numero
+24 * operador aritimetico
+24 ( delimitador
+24 2 numero
+24 + operador aritimetico
+24 2 numero
+24 ) delimitador
+24 ) delimitador
+24 ) delimitador
+24 ; delimitador
+25 fim palavra reservada
 
