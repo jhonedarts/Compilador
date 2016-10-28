@@ -1,0 +1,10 @@
+programa
+inicio
+	uma_letra 'c';      
+	
+	mensagem << "mensagem de teste"  
+	
+	mensagem2 << ;
+	
+	<< 1235.76;
+fim

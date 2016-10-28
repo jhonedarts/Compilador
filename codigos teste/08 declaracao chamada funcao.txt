@@ -1,0 +1,23 @@
+programa inicio
+
+  i << teste 10, 20, mat <<< 10, 10 >>>);  // falta abre parenteses
+
+  i <<  (10, 20);  // falta id
+
+  i << teste (10, A)  // falta ponto e virgula
+
+  escreva_na_tela("hello", , true); // falta parametro
+
+fim
+
+funcao inteiro (inteiro a, inteiro b, )  // falta id
+					 // falta parametro
+// falta inicio
+
+fim
+
+funcao (cadeia mensagem1, cadeia mensagem2 booleano flag) // falta id 
+							  // falta virgula
+inicio
+
+//falta fim

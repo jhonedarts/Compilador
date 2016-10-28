@@ -1,0 +1,6 @@
+programa
+inicio
+	soma << ((5 + a) * (10 * 8 + 6)) / 8; 
+    
+	soma << vetor<<<INDEX>>> + matrix<<<i,j,k>>> + (((10 * alfa) / 2) * Max);
+fim

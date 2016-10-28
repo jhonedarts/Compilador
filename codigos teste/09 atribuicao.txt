@@ -1,0 +1,20 @@
+programa
+inicio
+	soma << vetor<<<i>>> + matriz<<<i,j,k>>> + (a+10)*2/MAX;
+	
+	flag << verdadeiro;
+	
+	uma_letra << 'c';       
+	
+	mensagem << "mensagem de teste";
+	
+	mensagem2 << mensagem;
+	
+	valor << 1235.76;
+	
+	numero << 34435;
+	
+	result_exp << ((10+Alfa*0.05) * 2)/MAX;
+	
+	retorno_funcao << funcao(vet<<<10>>>,"mensagem de teste", resultado);
+fim

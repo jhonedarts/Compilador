@@ -1,0 +1,10 @@
+programa
+inicio
+      
+	matriz <<<i,j>>> << vetor <<< 10 >>>;
+	
+	matriz <<<10,j>>> << vetor<<<10>>> + vetor<<<i>>>;
+	
+	i << vetor <<< 5 >>>;
+       
+fim

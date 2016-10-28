@@ -1,0 +1,18 @@
+programa 
+inicio
+
+  teste(10, 20);
+
+  escreva_na_tela("hello", "world", true);
+
+fim
+
+funcao inteiro teste (inteiro a, inteiro b, inteiro matriz <<< 10, 10 >>>)
+inicio
+
+fim
+
+funcao escreva_na_tela (cadeia mensagem1, cadeia mensagem2, booleano flag)
+inicio
+
+fim

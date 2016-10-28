@@ -1,0 +1,12 @@
+var
+inicio
+    inteiro a <<< (2+3*10)/5 >>>, c <<<56, 67, tamanho>>>, b;
+    inteiro idade, cpf;
+    booleano flag;
+    real salario;
+fim
+
+programa
+inicio
+   
+fim

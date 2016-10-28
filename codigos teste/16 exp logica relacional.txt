@@ -1,0 +1,13 @@
+programa
+inicio
+
+    enquanto (i <= Max  nao(flag)) faca
+    inicio
+        se ((j <  e k > 10 e m > (10+(alfa*Max)/2)) ou flag = verdadeiro) entao
+        inicio
+           
+        fim       
+    fim
+
+    se (i  (10+(alfa*Max)/2)) entao inicio fim
+fim

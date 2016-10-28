@@ -1,0 +1,13 @@
+programa
+inicio  
+    se (j < 5) entao
+    inicio
+	
+	fim    
+    senao inicio 
+		se (k > 10) entao
+		inicio
+		
+		fim          
+    fim
+fim

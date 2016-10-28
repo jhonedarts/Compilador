@@ -24,11 +24,12 @@ public class Sintatico {
     private int atual;
 
     public Sintatico() {
-        erros = new LinkedList<Erro>();
-        tokens = new LinkedList<Token>();
+        
     }
  
     public void start(LinkedList<Token> tokens, String nomeArq) throws IOException{   
+        this.erros = new LinkedList<Erro>();
+        this.tokens = new LinkedList<Token>();
         nomeArq = nomeArq.split(".txt")[0];
         atual=0;
         this.tokens.addAll(tokens);        
@@ -38,7 +39,7 @@ public class Sintatico {
                 this.tokens.remove(tok);
         }
         
-        System.out.println("----------------- Analise Sintatica -----------------\n");
+        System.out.println("----------------- Analise Sintatica -----------------\nArquivo: "+nomeArq+"\n");
         programa();
         if (erros.isEmpty())
             System.out.println("Sucesso!");
@@ -143,7 +144,7 @@ public class Sintatico {
     // funcao funcoes | vazio
     private void funcoes(){
         try {
-            System.out.println(ver().getLexema());// so pra checar se o arquivo acabou, se sim, dara a exception
+            //System.out.println(ver().getLexema());// so pra checar se o arquivo acabou, se sim, dara a exception
             funcao_decl();// tratar fim de arquivo dentro desta tb, pois ai seria erro
             funcoes();
         } catch (EndTokensException ex) {
@@ -473,7 +474,7 @@ public class Sintatico {
     //<Var_Local><Corpo_Bloco> | <Comando><Corpo_Bloco> 
     // | <Chamada_Funcao>';'<Corpo_Bloco> | <Atribuicao><Corpo_Bloco> | <>
     private void corpo_bloco() throws EndTokensException{
-        System.out.println("corpo_bloco");
+        //System.out.println("corpo_bloco");
         if (igual(ver().getLexema(),"fim", "funcao")){            
             return;
         }
@@ -627,7 +628,7 @@ public class Sintatico {
     }
     //<Exp_Aritmetica><Escreva_Param2> | caractere_t<Escreva_Param2> | cadeia_t<Escreva_Param2>
     private void escreva_params() throws EndTokensException{
-        System.out.println(ver().getLexema()+" escreva_params");
+        //System.out.println(ver().getLexema()+" escreva_params");
         if(ver().getTipo().equals("cadeia")){
             consumir();
             escreva_params2();
@@ -1018,11 +1019,11 @@ public class Sintatico {
     
     //<Valor><Param_Cham_List2> | <>
     private void param_cham_list() throws EndTokensException{
-        System.out.println(ver().getLexema()+" param_cham_list");
+        //System.out.println(ver().getLexema()+" param_cham_list");
         if(ver().getLexema().equals(")"))
             return;
         valor();
-        System.out.println(ver().getLexema()+" param_cham_list2");
+        //System.out.println(ver().getLexema()+" param_cham_list2");
         param_cham_list2();
     }
     
@@ -1106,6 +1107,10 @@ public class Sintatico {
     private void exp_logica() throws EndTokensException {
         exp_logica2();
         exp_ou();
+        if(igual(ver().getLexema(), "=", "<>")){
+            consumir();
+            exp_logica();
+        }
     }
     
     //'ou'<Exp_Logica2><Exp_Ou> | <>
@@ -1134,7 +1139,7 @@ public class Sintatico {
     
     //'nao'<Valor_Booleano> | <Valor_Booleano>
     private void exp_nao() throws EndTokensException{
-        System.out.println(ver().getLexema()+" nao");
+        //System.out.println(ver().getLexema()+" nao");
         if(ver().getLexema().equals("nao")){
             consumir();
             valor_booleano();
@@ -1152,14 +1157,14 @@ public class Sintatico {
     
     //<Exp_Aritm_Logica><Exp_Relacional2>
     private void exp_relacional() throws EndTokensException{
-        System.out.println(ver().getLexema()+" exp_relacional");
+        //System.out.println(ver().getLexema()+" exp_relacional");
         exp_arim_logica();
         exp_relacional2();
     }
     
     //<Operador_Relacional><Exp_Aritm_Logica> | <>
     private void exp_relacional2() throws EndTokensException{
-        System.out.println(ver().getLexema()+" exp_relacional 2");
+        //System.out.println(ver().getLexema()+" exp_relacional 2");
         if(igual(ver().getLexema(), "<", "<=", ">", ">=", "<>", "=")){
             consumir();
             exp_arim_logica();
@@ -1198,11 +1203,14 @@ public class Sintatico {
     
     //'('<Exp_Aritm_Logica>')' | <Id_Vetor> | <Chamada_Funcao> | numero_t
     private void numero_logico() throws EndTokensException{
-        System.out.println(ver().getLexema()+" numero_logico");
+        //System.out.println(ver().getLexema()+" numero_logico");
         if(ver().getLexema().equals("(")){
             consumir();
-            exp_arim_logica();
-            System.out.println(ver().getLexema()+" -------------------------------------------");
+            if (igual(verLLX(1).getLexema(),"+", "-", "/", "*"))
+                exp_arim_logica();
+            else
+                exp_logica();
+            //System.out.println(ver().getLexema()+" -------------------------------------------");
             if(ver().getLexema().equals(")")){
                 consumir();
             }else{
@@ -1210,13 +1218,17 @@ public class Sintatico {
                 erros.add(new Erro(")", ver()));
                 //nada
             }
+            exp_logica();
         }else if(ver().getTipo().equals("identificador")){
             if(verLLX(1).getLexema().equals("("))
                 chamada_funcao();                
             else
                 id_vetor();
-        }else if(ver().getTipo().equals("numero"))
+        }else if(ver().getTipo().equals("numero")){
             consumir();
+        }else if (igual(ver().getLexema(),"verdadeiro", "falso")){
+            valor_booleano();
+        }
     }
     ////////////////////////    outros    /////////////////////////////
     
@@ -1233,7 +1245,7 @@ public class Sintatico {
     
     //<Exp_Logica> | caractere_t | cadeia_t
     private void valor() throws EndTokensException{
-        System.out.println(ver().getLexema()+" valor");
+        //System.out.println(ver().getLexema()+" valor");
         if (igual(ver().getTipo(),"caractere", "cadeia"))
             consumir();
         else

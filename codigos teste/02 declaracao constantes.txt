@@ -1,0 +1,12 @@
+const
+
+   inteiro a  10;
+   caractere c << 'k'
+   cadeia b << "hehe";
+   d << verdadeiro;
+
+
+programa
+inicio
+    
+fim

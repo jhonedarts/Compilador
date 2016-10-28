@@ -1,0 +1,13 @@
+programa
+inicio
+    leia(a);
+	
+	leia(a, b, c);
+	
+	leia(vetor<<<i>>>);
+	
+	leia(matriz<<<i,j,k,l,m>>>);
+	
+	leia(vetor<<<i>>>, a, b, matriz<<<i,j,k,l,m>>>);
+	
+fim

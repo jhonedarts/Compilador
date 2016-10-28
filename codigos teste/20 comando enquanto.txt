@@ -1,0 +1,10 @@
+programa
+inicio
+    enquanto max > K) faca
+           
+    fim
+    enquanto (max > K
+    inicio
+       
+    fim
+fim

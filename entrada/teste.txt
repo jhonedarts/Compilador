@@ -9,17 +9,32 @@ real x<< 3.2, a<<1;
 fim
 
 programa inicio 
-a << a+b;
+a << a+b - a(3+1);
 leia (a);
 escreva (a);
 
-se (verdadeiro) entao
+se (nao (a>b=b<4<>(nao b))=verdadeiro) entao inicio
 	xurupitas << 20;
-senao
+fim senao inicio
 	xurupitas << 17;
+fim
+a << a+b - a(3+1);
+enquanto ( i <= posicaoFim) faca
+        inicio
+
+            vetor<<<i>>> << vetorTemp<<<i-posicaoInicio>>>;
+            i << i + 1;
+        fim
 
 fim
 
 funcao inteiro abacate (inteiro i) inicio
+a << a+b - a(3+1);
+enquanto ( i <= posicaoFim) faca
+        inicio
+
+            vetor<<<i>>> << vetorTemp<<<i-posicaoInicio>>>;
+            i << i + 1;
+        fim
 abacate << b(a*b/(a+5*4*(2+2)));
 fim

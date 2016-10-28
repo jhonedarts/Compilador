@@ -1,0 +1,13 @@
+var
+
+    inteiro a <<<  >>>, c <<<10 10>>>, b;
+    real salario << 100;
+    booleano ;
+    cadeia msg;
+    contador;
+
+
+programa
+inicio
+   
+fim

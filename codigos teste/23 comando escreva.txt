@@ -1,0 +1,16 @@
+programa
+inicio
+    
+	escreva(a);
+	
+	escreva(a, b, c);
+	
+	escreva("hello world");
+	
+	escreva("hello world", 'e', "good morning");
+	
+	escreva((a+10*(4-10))/2);
+	
+	escreva("resultado", result, (a+10*(4-10))/2);
+    
+fim

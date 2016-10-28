@@ -1,0 +1,11 @@
+var
+inicio
+  
+  inteiro a;
+
+fim
+
+programa
+inicio
+   
+fim

@@ -1,0 +1,8 @@
+var
+inicio
+  
+  inteiro a;
+
+fim
+
+inicio

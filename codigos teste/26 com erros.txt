@@ -1,0 +1,87 @@
+programa
+inicio
+    var inteiro tamanho, i vetor<<<tamanho>>>;
+        
+    i << ;
+
+    escreva "Digite o tamanho do vetor";
+    leia (tamanho);
+    
+    enquanto (i < tamanho)
+    inicio
+        escreva("Digite um numero para preencher o vetor");
+        leia( );
+		i << i + 1;
+    
+    
+    escreva ("Ordenando");
+    mergeSort(vetor, 0, tamanho);
+    escreva ("Vetor ordenado com sucesso");
+    
+    i << 0;
+    enquanto (i < tamanho) faca
+    inicio
+		escreva(vetor<<<i>>>);
+		i << ;
+    fim
+    
+    escreva ("Obrigado por usar o aplicativo");
+    
+
+
+funcao mergeSort(inteiro vetor<<<10>>>, inteiro posicaoInicio, inteiro posicaoFim)
+inicio
+    var inteiro i, j, k, metadeTamanho, vetorTemp<<<10>>>;
+    
+    se (posicaoInicio <> posicaoFim) entao
+    inicio
+        metadeTamanho << (posicaoInicio + posicaoFim ) / 2;
+        mergeSort(vetor, posicaoInicio, metadeTamanho);
+        mergeSort(vetor, metadeTamanho + 1, posicaoFim);
+
+        i << posicaoInicio;
+        j << metadeTamanho + 1;
+        k  0;
+        
+        enquanto(oi) faca
+        
+            se (nao(i <> (metadeTamanho + 1) )) entao
+            inicio
+                vetorTemp<<< >>> << vetor <<< j;
+                j << j + 1;
+                k << k + 1;
+            fim
+            senao
+            inicio
+                se (nao(j <> (posicaoFim + 1))) entao
+                inicio
+                    vetorTemp<<<k>>> << vetor<<<i>>>;
+                    j << j + 1;
+                    k << k + 1;
+                fim
+                senao
+                inicio
+                    se (vetor<<<i>>> < vetor<<<j>>>) entao
+                    inicio
+                        vetorTemp<<<k>>> << vetor<<<i>>>;
+                        j << j + 1;
+                        k << k + 1;
+                    fim
+                    senao
+                    inicio
+                        vetorTemp<<<k>>> << vetor<<<j>>>;
+                        j << j + 1;
+                        k << k + 1;
+                    fim
+                fim
+            fim
+        fim
+        i << posicaoInicio;
+        enquanto ( i <= posicaoFim) faca
+        inicio
+
+            vetor<<<i>>> << vetorTemp<<<i-posicaoInicio>>>;
+            i << i + 1;
+        fim
+    fim
+fim

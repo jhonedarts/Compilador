@@ -13,7 +13,7 @@ public class Token {
     private String lexema;
     private int tipo;
     private String tipos[] = {"palavra reservada", "identificador", "numero", "operador aritimetico",
-        "operador relacional", "operador logico", "comentario", "delimitador", "cadeia de caracteres", "caracetere"} ;
+        "operador relacional", "operador logico", "comentario", "delimitador", "cadeia", "caracetere"} ;
     private String erros[] = {"caracter(es) nao suportado(s)","identificador mal formado", 
         "numero mal formado", "comentario mal formado", "cadeia de caracteres mal formada", "caractere mal formado"};
     private boolean valido;
