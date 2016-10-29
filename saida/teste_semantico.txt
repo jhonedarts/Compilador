@@ -1,0 +1,2 @@
+3 Variavel b já declarada
+3 Variavel c já declarada
