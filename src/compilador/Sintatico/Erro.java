@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compilador.Sintatico;
+package compilador.sintatico;
 
-import compilador.Lexico.Token;
+import compilador.lexico.Token;
 
 /**
  *
  * @author jmalmeida
  */
-public class Erro {
+class Erro {
     private String esperado;
     private String obtido;
     private int linha;

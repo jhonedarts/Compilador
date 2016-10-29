@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compilador.Sintatico;
+package compilador.sintatico;
 
-import compilador.Lexico.Token;
+import compilador.lexico.Token;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,14 +23,25 @@ public class Sintatico {
     private LinkedList<Token> tokens;
     private LinkedList<Erro> erros;
     private int atual;
+    
+    //variaveis usadas no Sematico funcoes 
+    private String tipo;
+    private Funcao funcao;
+    private String parametro;
+    private HashMap<String, Funcao> funcoes;
 
     public Sintatico() {
         
     }
  
-    public void start(LinkedList<Token> tokens, String nomeArq) throws IOException{   
+    public HashMap<String, Funcao> start(LinkedList<Token> tokens, String nomeArq) throws IOException{   
         this.erros = new LinkedList<Erro>();
         this.tokens = new LinkedList<Token>();
+        this.funcoes = new HashMap<String, Funcao>();
+        
+        tipo =null;
+        funcao =null;
+        parametro = null;
         nomeArq = nomeArq.split(".txt")[0];
         atual=0;
         this.tokens.addAll(tokens);        
@@ -39,10 +51,11 @@ public class Sintatico {
                 this.tokens.remove(tok);
         }
         
-        System.out.println("----------------- Analise Sintatica -----------------\nArquivo: "+nomeArq+"\n");
+        //System.out.println("----------------- Analise Sintatica -----------------\nArquivo: "+nomeArq+"\n");
         programa();
         if (erros.isEmpty())
-            System.out.println("Sucesso!");
+            //System.out.println("Sucesso!");
+            System.out.println("");
         else{
             for(Erro error: erros){
                 System.out.println("Esperava \""+error.getEsperado()+"\" mas obteve \""+error.getObtido()+"\" na linha: "+error.getLinha());               
@@ -66,6 +79,7 @@ public class Sintatico {
             }
         }
         gravarArq.close();
+        return funcoes;
     }
     //vê o token atual
     private Token ver() throws EndTokensException{
@@ -224,10 +238,7 @@ public class Sintatico {
     
     //id <vetor> <R2>
     private void R() throws EndTokensException {
-        if (ver().getTipo().equals("identificador")){
-//--------coletar ids antes de consumir em uma lista e verificar se ele ja existe, se sim é um erro semantico --------------------------semantico
-//-----------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------
+        if (ver().getTipo().equals("identificador")){            
             consumir();
             vetor();
             R2();
@@ -260,6 +271,7 @@ public class Sintatico {
     //'<<<'<Exp_Aritmetica><vetor2>'>>>' | <>
     private void vetor() throws EndTokensException {
         if(ver().getLexema().equals("<<<")){
+            parametro = "vetor "+parametro;
             consumir();
             exp_aritmetica(); // a fazer   
             vetor2();
@@ -355,18 +367,9 @@ public class Sintatico {
     
     //id'<<'<Literal><Const_Decl2>
     private void const_decl() throws EndTokensException{
-        if(ver().getTipo().equals("identificador")){
-//--------coletar ids antes de consumir em uma lista e verificar se ele ja existe, se sim é um erro semantico --------------------------semantico
-//-----------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------
-
-            consumir();  
+        if(ver().getTipo().equals("identificador")){consumir();  
             if(ver().getLexema().equals("<<")){
-                consumir(); 
-//--------passar o tipo consumido em const_list para esta funcao e comparar com o tipo do literal --------------------------------------semantico
-//-----------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------
-                if(isLiteral()){
+                consumir(); if(isLiteral()){
                     consumir();
                     const_decl2();
                 }else{
@@ -691,7 +694,7 @@ public class Sintatico {
     //<Id_Vetor><Leia_Param2>
     private void leia_params() throws EndTokensException {
         if(ver().getLexema().equals(")"))
-            erros.add(new Erro(")", ver()));
+            return;
         else{
             id_vetor();
             leia_params2();
@@ -864,10 +867,12 @@ public class Sintatico {
             consumir();
             funcao_decl2();
             if(ver().getTipo().equals("identificador")){
+                funcao = new Funcao(ver().getLexema(), tipo);
                 consumir();
                 if(ver().getLexema().equals("(")){
                     consumir();
                     param_decl_list();
+                    funcoes.put(funcao.getNome(), funcao);
                     if(ver().getLexema().equals(")")){
                         consumir();
                         bloco();
@@ -914,6 +919,7 @@ public class Sintatico {
                 }else
                     bloco();
             }
+        }else{
             //panico -funcao
             erros.add(new Erro("funcao", ver()));
             sincronizar("inteiro", "real", "booleano", "caractere", "cadeia", "identificador",
@@ -934,8 +940,11 @@ public class Sintatico {
     
     //<Tipo> | <>
     private void funcao_decl2() throws EndTokensException{
-        if(isTipo())
+        if(isTipo()){
+            tipo = ver().getLexema();
             consumir();
+        }
+        tipo = "vazio";
     }
     
     //<Tipo><Id_Vetor><Param_Decl_List2> | <>
@@ -943,9 +952,13 @@ public class Sintatico {
         if(igual(ver().getLexema(), "inicio", "var", 
                                 "escreva", "leia", "se", "enquanto", "(", "fim", "funcao"))
             return;
+        if(ver().getLexema().equals(")"))//sem parametros
+            return;
         if(isTipo()){
+            parametro = ver().getLexema();
             consumir();
-            id_vetor();
+            id_vetor();//ve se é um vetor
+            funcao.addParametros(parametro);
             param_decl_list2();
         }else{
             //panico -tipo
@@ -964,8 +977,10 @@ public class Sintatico {
         if(ver().getLexema().equals(",")){
             consumir();
             if(isTipo()){
+                parametro = ver().getLexema();
                 consumir();
-                id_vetor();
+                id_vetor();//ve se é um vetor
+                funcao.addParametros(parametro);
                 param_decl_list2();
             }else{
                 //panico -tipo

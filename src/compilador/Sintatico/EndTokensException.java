@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compilador.Sintatico;
+package compilador.sintatico;
 
 /**
  *
  * @author jmalmeida
  */
-class EndTokensException extends Exception {
+public class EndTokensException extends Exception {
 
     public EndTokensException(String msg) {
         super(msg);

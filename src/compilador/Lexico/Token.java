@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compilador.Lexico;
+package compilador.lexico;
 
 /**
  *
@@ -12,13 +12,15 @@ package compilador.Lexico;
 public class Token {
     private String lexema;
     private int tipo;
+    private boolean valido;
+    private int linha, coluna;
+
+    //auxiliares
     private String tipos[] = {"palavra reservada", "identificador", "numero", "operador aritimetico",
         "operador relacional", "operador logico", "comentario", "delimitador", "cadeia", "caracetere"} ;
     private String erros[] = {"caracter(es) nao suportado(s)","identificador mal formado", 
         "numero mal formado", "comentario mal formado", "cadeia de caracteres mal formada", "caractere mal formado"};
-    private boolean valido;
-    private int linha, coluna;
-
+    
     public Token(String lexema, int tipo, boolean valido) {
         this.lexema = lexema;
         this.tipo = tipo;
