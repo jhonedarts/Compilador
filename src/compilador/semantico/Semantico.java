@@ -186,13 +186,14 @@ public class Semantico {
     //id <vetor> <R2>
     private void R() throws EndTokensException {
         if (ver().getTipo().equals("identificador")){
-            if(simbolos.get(ver().getLexema())==null){//nao declarado
-                simbolos.put(ver().getLexema(), new Simbolo(ver(), tipo, 0));
-            }else{//já declarado
-                erros.add(new Erro("Variavel "+ver().getLexema()+" já declarada", ver().getLinha()));
-            }
+            String id = ver().getLexema();
             consumir();
             vetor();
+            if(simbolos.get(id)==null){//nao declarado
+                simbolos.put(id, new Simbolo(ver(), tipo, 0));
+            }else{//já declarado
+                erros.add(new Erro("Variavel "+id+" ja declarada", ver().getLinha()));
+            }
             R2();
         }
     }
@@ -208,7 +209,8 @@ public class Semantico {
     //'<<<'<Exp_Aritmetica><vetor2>'>>>' | <>
     private void vetor() throws EndTokensException {
         if(ver().getLexema().equals("<<<")){
-            parametro = parametro+"vetor";
+            tipo = tipo+"Vetor";
+            parametro = parametro+"Vetor";
             consumir();
             exp_aritmetica(); // a fazer   
             vetor2();
@@ -258,6 +260,7 @@ public class Semantico {
             return;
         }
         if (isTipo()){
+            tipo = ver().getLexema();
             consumir();
             const_decl();
             constlist();
@@ -266,9 +269,19 @@ public class Semantico {
     
     //id'<<'<Literal><Const_Decl2>
     private void const_decl() throws EndTokensException{
-        if(ver().getTipo().equals("identificador")){consumir();  
+        if(ver().getTipo().equals("identificador")){
+            String id = ver().getLexema();
+            if(simbolos.get(id)==null){//nao declarado
+                simbolos.put(id, new Simbolo(ver(), tipo, 0));//zero = global
+            }else{//já declarado
+                erros.add(new Erro("Variavel "+id+" ja declarada", ver().getLinha()));
+            }
+            consumir();  
             if(ver().getLexema().equals("<<")){
                 consumir(); if(isLiteral()){
+                    if(!tipo.equals(checarTipo())){
+                        erros.add(new Erro("Tipos incompativeis, "+tipo+" e "+ver().getLexema(), ver().getLinha()));
+                    }
                     consumir();
                     const_decl2();
                 }
@@ -280,10 +293,16 @@ public class Semantico {
         if (ver().getLexema().equals(",")){
             consumir();
             if(ver().getTipo().equals("identificador")){
+                if(simbolos.get(ver().getLexema())==null){//nao declarado
+                    simbolos.put(ver().getLexema(), new Simbolo(ver(), tipo, 0));
+                }else{//já declarado
+                    erros.add(new Erro("Variavel "+ver().getLexema()+" ja declarada", ver().getLinha()));
+                }
                 consumir();
                 if (ver().getLexema().equals("<<")){
                     consumir();     
                     if(isLiteral()){
+                        
                         consumir();
                         const_decl2();
                     }
@@ -511,12 +530,10 @@ public class Semantico {
             consumir();
             funcao_decl2();
             if(ver().getTipo().equals("identificador")){
-                funcao = new Funcao(ver().getLexema(), tipo);
                 consumir();
                 if(ver().getLexema().equals("(")){
                     consumir();
                     param_decl_list();
-                    funcoes.put(funcao.getNome(), funcao);
                     if(ver().getLexema().equals(")")){
                         consumir();
                         bloco();
@@ -529,10 +546,8 @@ public class Semantico {
     //<Tipo> | <>
     private void funcao_decl2() throws EndTokensException{
         if(isTipo()){
-            tipo = ver().getLexema();
             consumir();
         }
-        tipo = "vazio";
     }
     
     //<Tipo><Id_Vetor><Param_Decl_List2> | <>
@@ -543,10 +558,8 @@ public class Semantico {
         if(ver().getLexema().equals(")"))//sem parametros
             return;
         if(isTipo()){
-            parametro = ver().getLexema();
             consumir();
             id_vetor();//ve se é um vetor
-            funcao.addParametros(parametro);
             param_decl_list2();
         }
     }
@@ -559,10 +572,8 @@ public class Semantico {
         if(ver().getLexema().equals(",")){
             consumir();
             if(isTipo()){
-                parametro = ver().getLexema();
                 consumir();
                 id_vetor();//ve se é um vetor
-                funcao.addParametros(parametro);
                 param_decl_list2();
             }
         }
@@ -788,6 +799,23 @@ public class Semantico {
         return igual(ver().getTipo(), "caractere", "cadeia", "numero")|| igual(ver().getLexema(), "verdadeiro", "falso");
     }
     
+    //usada para fins semanticos
+    private String checarTipo() throws EndTokensException{
+        String vTip = ver().getTipo();
+        String vLex = ver().getLexema();
+        String tipo = vTip;
+        
+        if(vTip.equals("numero")){
+            if(vLex.contains(".")){
+                tipo = "real";
+            }else{
+                tipo = "inteiro";
+            }
+        }else if(igual(vLex, "verdadeiro", "falso")){
+            tipo = "booleano";
+        }            
+        return tipo;
+    }
     //vetor definido em variaveis
     
     //<Exp_Logica> | caractere_t | cadeia_t
