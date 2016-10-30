@@ -1,17 +1,17 @@
 var inicio
 inteiro a, b, c;
-real b, c;
 fim
 
 const inicio
 inteiro a<<2.1, b<<4;
-real x<< 3.2, a<<1;
+real x<< 3.2, t<<1;
 fim
 
 programa inicio 
+var caractere a;
 a << a+b - a(3+1);
 leia (a);
-escreva (a);
+escreva (z);
 
 se (nao (a>b=b<4<>(nao b))=verdadeiro) entao inicio
 	xurupitas << 20;
@@ -21,7 +21,7 @@ fim
 a << a+b - a(3+1);
 enquanto ( i <= posicaoFim) faca
         inicio
-
+	    var caractere a<<<2>>>, u;
             vetor<<<i>>> << vetorTemp<<<i-posicaoInicio>>>;
             i << i + 1;
         fim
@@ -29,6 +29,7 @@ enquanto ( i <= posicaoFim) faca
 fim
 
 funcao inteiro abacate (inteiro i) inicio
+var caractere a;
 a << a+b - a(3+1);
 enquanto ( i <= posicaoFim) faca
         inicio
@@ -37,4 +38,8 @@ enquanto ( i <= posicaoFim) faca
             i << i + 1;
         fim
 abacate << b(a*b/(a+5*4*(2+2)));
+fim
+
+funcao inteiro abacate (inteiro i) inicio
+
 fim

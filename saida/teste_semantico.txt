@@ -1,7 +1,12 @@
-3 Variavel b ja declarada
-3 Variavel c ja declarada
-7 Variavel a ja declarada
-7 Tipos incompativeis, inteiro e 2.1
-7 Variavel b ja declarada
-8 Variavel a ja declarada
-8 Tipos incompativeis, real e 1
+6 Variavel "a" ja declarada
+6 Tipos incompativeis, inteiro e 2.1
+6 Variavel "b" ja declarada
+14 Variavel "z" ja declarada
+25 Variavel "i" ja declarada
+25 Variavel "i" ja declarada
+25 Variavel "posicaoInicio" ja declarada
+37 Variavel "i" ja declarada
+37 Variavel "i" ja declarada
+37 Variavel "posicaoInicio" ja declarada
+43 Instrucao de retorno nao encontrada
+43 funcao "abacate" ja declarada

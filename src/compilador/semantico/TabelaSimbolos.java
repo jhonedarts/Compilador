@@ -12,7 +12,7 @@ import java.util.HashMap;
  * @author jhone
  */
 public class TabelaSimbolos {
-    
+    private String escopo =null;
     private HashMap<String, Simbolo> simbolos;
     private TabelaSimbolos anterior;
     private TabelaSimbolos proximo;
@@ -25,6 +25,14 @@ public class TabelaSimbolos {
 
     public void put(String key, Simbolo simbolo){
         simbolos.put(key, simbolo);
+    }
+
+    public String getEscopo() {
+        return escopo;
+    }
+
+    public void setEscopo(String escopo) {
+        this.escopo = escopo;
     }
     
     public Simbolo get(String key){

@@ -9,17 +9,24 @@ import java.util.LinkedList;
 
 /**
  *
- * @author jhone
+ * @author jhone e castro
  */
 public class Funcao {
     private String nome;
     private LinkedList<String> parametros;
     private String tipoRetorno;
+    private boolean ok;
+    private int linha;
 
-    public Funcao(String nome, String tipoRetorno) {
+    public Funcao(String nome, String tipoRetorno, int linha) {
         this.nome = nome;
         this.parametros = new LinkedList<String>();
         this.tipoRetorno = tipoRetorno;
+        if(tipoRetorno.equals("vazio"))
+            this.ok = true;
+        else
+            this.ok = false;
+        this.linha = linha;
     }
 
     public String getNome() {
@@ -36,6 +43,18 @@ public class Funcao {
 
     public String getTipoRetorno() {
         return tipoRetorno;
+    }
+
+    public boolean isOk() {
+        return ok;
+    }
+
+    public void setOk(boolean ok) {
+        this.ok = ok;
+    }
+
+    public int getLinha() {
+        return linha;
     }
     
     

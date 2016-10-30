@@ -26,7 +26,7 @@ public class Compilador {
      */
     public static void main(String[] args) throws IOException {
         LinkedList<Token> tokensList = new LinkedList();
-        HashMap<String, Funcao> funcoesList;
+        LinkedList<Funcao> funcoesList;
         Lexico lexico = new Lexico();
         Sintatico sintatico = new Sintatico();
         Semantico semantico = new Semantico();

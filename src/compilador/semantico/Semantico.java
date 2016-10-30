@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -29,17 +31,20 @@ public class Semantico {
     private String parametro;
     private TabelaSimbolos simbolos;
     private LinkedList<Erro> erros;
-    private HashMap<String, Funcao> funcoes;
+    private LinkedList<Funcao> funcoes;
+    private LinkedList<String> funcoesLidas;
+    private int aritmeticaValor = 0;
 
     public Semantico() {
         
     }
  
-    public void start(LinkedList<Token> tokens, HashMap<String, Funcao> funcoes, String nomeArq) throws IOException{
+    public void start(LinkedList<Token> tokens, LinkedList<Funcao> funcoes, String nomeArq) throws IOException{
         this.tokens = new LinkedList<Token>();
         this.erros = new LinkedList<Erro>();
         this.simbolos = new TabelaSimbolos(null);
         this.funcoes = funcoes;
+        this.funcoesLidas = new LinkedList<String>();
         tipo =null;
         funcao =null;
         parametro = null;
@@ -54,9 +59,25 @@ public class Semantico {
         
         System.out.println("----------------- Analise Semantica -----------------\nArquivo: "+nomeArq+"\n");
         programa();
+        HashMap<String, Funcao> funcoesAux = new HashMap<String, Funcao>();
+        for(Funcao funcao: funcoes){
+            if(!funcao.isOk())
+                erros.add(new Erro("Instrucao de retorno nao encontrada",funcao.getLinha()));
+            if (funcoesAux.containsKey(funcao.getNome()))
+                erros.add(new Erro("funcao \""+funcao.getNome()+"\" ja declarada",funcao.getLinha()));
+            else
+                funcoesAux.put(funcao.getNome(), funcao);
+        }
         if (erros.isEmpty())
             System.out.println("Sucesso!");
         else{
+            Collections.sort (erros, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    Erro e1 = (Erro) o1;
+                    Erro e2 = (Erro) o2;
+                    return e1.getLinha() < e2.getLinha() ? -1 : (e1.getLinha() > e2.getLinha() ? +1 : 0);
+                }
+            });
             for(Erro error: erros){
                 System.out.println(error.getLinha()+" "+error.getMensagem());               
             }
@@ -186,14 +207,14 @@ public class Semantico {
     //id <vetor> <R2>
     private void R(TabelaSimbolos simbolos) throws EndTokensException {
         if (ver().getTipo().equals("identificador")){
-            String id = ver().getLexema();
-            consumir();
-            vetor(simbolos);
-            if(simbolos.get(id)==null){//nao declarado
-                simbolos.put(id, new Simbolo(ver(), tipo));
+            Token token = ver();
+            id_vetor(simbolos);
+            if(simbolos.get(token.getLexema())==null){//nao declarado
+                simbolos.put(token.getLexema(), new Simbolo(token, tipo));//global
             }else{//já declarado
-                erros.add(new Erro("Variavel "+id+" ja declarada", ver().getLinha()));
+                erros.add(new Erro("Variavel \""+token.getLexema()+"\" ja declarada", token.getLinha()));
             }
+            tipo = tipo.split("Vetor")[0];
             R2(simbolos);
         }
     }
@@ -212,7 +233,11 @@ public class Semantico {
             tipo = tipo+"Vetor";
             parametro = parametro+"Vetor";
             consumir();
-            exp_aritmetica(simbolos);   
+            exp_aritmetica(simbolos);  
+            if(aritmeticaValor!=1 &&aritmeticaValor!=4){
+                erros.add(new Erro("Vetor mal declarado, esperava um valor do tipo inteiro", ver().getLinha()));
+            }
+            aritmeticaValor = 0;
             vetor2(simbolos);
             if(ver().getLexema().equals(">>>")){
                 consumir();                
@@ -225,6 +250,10 @@ public class Semantico {
         if(ver().getLexema().equals(",")){
             consumir();
             exp_aritmetica(simbolos);
+            if(aritmeticaValor!=1 && aritmeticaValor!=4){
+                erros.add(new Erro("Vetor mal declarado, esperava um valor do tipo inteiro", ver().getLinha()));
+            }
+            aritmeticaValor = 0;
             vetor2(simbolos);
         }
     }
@@ -270,18 +299,18 @@ public class Semantico {
     //id'<<'<Literal><Const_Decl2>
     private void const_decl(TabelaSimbolos simbolos) throws EndTokensException{
         if(ver().getTipo().equals("identificador")){
-            String id = ver().getLexema();
-            if(simbolos.get(id)==null){//nao declarado
-                simbolos.put(id, new Simbolo(ver(), tipo));//zero = global
+            if(simbolos.get(ver().getLexema())==null){//nao declarado
+                simbolos.put(ver().getLexema(), new Simbolo(ver(), tipo, true));//global
             }else{//já declarado
-                erros.add(new Erro("Variavel "+id+" ja declarada", ver().getLinha()));
+                erros.add(new Erro("Variavel \""+ver().getLexema()+"\" ja declarada", ver().getLinha()));
             }
             consumir();  
             if(ver().getLexema().equals("<<")){
                 consumir(); 
                 if(isLiteral()){
-                    if(!tipo.equals(checarTipo())){
-                        erros.add(new Erro("Tipos incompativeis, "+tipo+" e "+ver().getLexema(), ver().getLinha()));
+                    if(!tipo.equals(checarTipo()) ){                        
+                        if(!(tipo.equals("real")&&checarTipo().equals("inteiro")))
+                            erros.add(new Erro("Tipos incompativeis, "+tipo+" e "+ver().getLexema(), ver().getLinha()));
                     }
                     consumir();
                     const_decl2(simbolos);
@@ -295,16 +324,17 @@ public class Semantico {
             consumir();
             if(ver().getTipo().equals("identificador")){
                 if(simbolos.get(ver().getLexema())==null){//nao declarado
-                    simbolos.put(ver().getLexema(), new Simbolo(ver(), tipo));
+                    simbolos.put(ver().getLexema(), new Simbolo(ver(), tipo, true));
                 }else{//já declarado
-                    erros.add(new Erro("Variavel "+ver().getLexema()+" ja declarada", ver().getLinha()));
+                    erros.add(new Erro("Variavel \""+ver().getLexema()+"\" ja declarada", ver().getLinha()));
                 }
                 consumir();
                 if (ver().getLexema().equals("<<")){
                     consumir();     
                     if(isLiteral()){
-                        if(!tipo.equals(checarTipo())){
-                            erros.add(new Erro("Tipos incompativeis, "+tipo+" e "+ver().getLexema(), ver().getLinha()));
+                        if(!tipo.equals(checarTipo()) ){                        
+                            if(!(tipo.equals("real")&&checarTipo().equals("inteiro")))
+                                erros.add(new Erro("Tipos incompativeis, "+tipo+" e "+ver().getLexema(), ver().getLinha()));
                         }
                         consumir();
                         const_decl2(simbolos);
@@ -324,6 +354,20 @@ public class Semantico {
         TabelaSimbolos simbolosNovo = new TabelaSimbolos(simbolosAnterior);
         simbolosAnterior.setProximo(simbolosNovo);
         
+        if(ver().getLexema().equals("inicio")){
+            consumir();
+            corpo_bloco(simbolosNovo);
+        }
+        if(ver().getLexema().equals("fim")){
+            consumir();
+        }
+    }
+    //'inicio'<Corpo_Bloco>'fim'
+    private void bloco(TabelaSimbolos simbolosAnterior, String nomeFuncao) throws EndTokensException{
+        //escopo
+        TabelaSimbolos simbolosNovo = new TabelaSimbolos(simbolosAnterior);
+        simbolosAnterior.setProximo(simbolosNovo);
+        simbolosNovo.setEscopo(nomeFuncao);
         if(ver().getLexema().equals("inicio")){
             consumir();
             corpo_bloco(simbolosNovo);
@@ -367,8 +411,16 @@ public class Semantico {
         if (ver().getLexema().equals("var")){
             consumir();
             if(isTipo()){
+                tipo = ver().getLexema();
                 consumir();
+                Token token = ver();
                 id_vetor(simbolos);
+                if(simbolos.get(token.getLexema())==null){//nao declarado
+                    simbolos.put(token.getLexema(), new Simbolo(token, tipo));//global
+                }else{//já declarado
+                    erros.add(new Erro("Variavel \""+token.getLexema()+"\" ja declarada", token.getLinha()));
+                }
+                tipo = tipo.split("Vetor")[0];
                 var_local2(simbolos);
             }
         }
@@ -378,7 +430,14 @@ public class Semantico {
     private void var_local2(TabelaSimbolos simbolos) throws EndTokensException{
         if (ver().getLexema().equals(",")){
             consumir();
+            Token token = ver();
             id_vetor(simbolos);
+            if(simbolos.get(token.getLexema())==null){//nao declarado
+                simbolos.put(token.getLexema(), new Simbolo(token, tipo));//global
+            }else{//já declarado
+                erros.add(new Erro("Variavel \""+token.getLexema()+"\" ja declarada", token.getLinha()));
+            }
+            tipo = tipo.split("Vetor")[0];
             var_local2(simbolos);
         }else if(ver().getLexema().equals(";")){
             consumir();
@@ -421,8 +480,7 @@ public class Semantico {
         if(ver().getTipo().equals("cadeia")){
             consumir();
             escreva_params2(simbolos);
-        }//<Valor_Numerico> ::= '('<Exp_Aritmetica>')' | <Id_Vetor> | <Chamada_Funcao> | numero_t
-        else if(ver().getTipo().equals("caractere")){
+        } else if(ver().getTipo().equals("caractere")){
             consumir();
             escreva_params2(simbolos);
         }else{
@@ -436,8 +494,8 @@ public class Semantico {
         if(ver().getLexema().equals(","))
             escreva_params(simbolos);    
     }
-    //'leia''('<Leia_Params>')'';'
     
+    //'leia''('<Leia_Params>')'';'    
     private void leia(TabelaSimbolos simbolos) throws EndTokensException{
         if (ver().getLexema().equals("leia")){               
             consumir();
@@ -539,13 +597,15 @@ public class Semantico {
             consumir();
             funcao_decl2(simbolos);
             if(ver().getTipo().equals("identificador")){
+                String nomeFuncao = ver().getLexema();
+                funcoesLidas.add(nomeFuncao);
                 consumir();
                 if(ver().getLexema().equals("(")){
                     consumir();
                     param_decl_list(simbolos);
                     if(ver().getLexema().equals(")")){
                         consumir();
-                        bloco(simbolos);
+                        bloco(simbolos, nomeFuncao);
                     }
                 }
             }
@@ -665,12 +725,52 @@ public class Semantico {
                 consumir();
             }
         }else if(ver().getTipo().equals("identificador")){
-            if(verLLX(1).getLexema().equals("("))                
+            if(verLLX(1).getLexema().equals("(")){                
                 chamada_funcao(simbolos);
-            else
+                Funcao funcao = funcoesGet(ver().getLexema());
+                if(funcao!=null){//funcao existe
+                    if(funcao.getTipoRetorno().equals("inteiro")){
+                        aritmeticaValor = 1;
+                    }else if(funcao.getTipoRetorno().equals("real")){
+                        aritmeticaValor = 2;
+                    }else{//nao é um numero
+                        aritmeticaValor = 0;
+                    }
+                }else{
+                    erros.add(new Erro("Funcao nao declarada", ver().getLinha()));
+                    aritmeticaValor = 4;
+                }
+            }else{
+                Simbolo simb = null;
+                TabelaSimbolos simbs = simbolos;
+                while (simbs!=null && simb==null){
+                    simb = simbs.get(ver().getLexema());
+                    simbs = simbs.getAnterior();
+                }
+                if(simb!=null){                    
+                    if(simb.getTipo().equals("inteiro")){
+                        aritmeticaValor = 1;
+                    }else if(simb.getTipo().equals("real")){
+                        aritmeticaValor = 2;
+                    }else if(!simb.isInicializado()){
+                        aritmeticaValor = 4;
+                        erros.add(new Erro("Variavel \""+ver().getLexema()+"\" nao inicializada", ver().getLinha()));
+                    }else{
+                        aritmeticaValor = 0;
+                    }
+                }else{
+                    erros.add(new Erro("Variavel \""+ver().getLexema()+"\" ja declarada", ver().getLinha()));
+                    aritmeticaValor = 4;
+                }
                 id_vetor(simbolos);
-        }else if (ver().getTipo().equals("numero"))
+            }
+        }else if (ver().getTipo().equals("numero")){
+            if(checarTipo().equals("inteiro"))
+                aritmeticaValor = 1;
+            else
+                aritmeticaValor = 2;
             consumir();
+        }
             
     }
     
@@ -839,7 +939,30 @@ public class Semantico {
     private void id_vetor(TabelaSimbolos simbolos) throws EndTokensException{        
         if(ver().getTipo().equals("identificador")){
             consumir();
+            if(verLLX(1).getLexema().equals("<<<")){
+                if(!simbolos.get(ver().getLexema()).getTipo().contains("Vetor")){
+                    erros.add(new Erro("Variavel \""+ver().getLexema()+"\" nao é um vetor",ver().getLinha()));
+                }
+            }
             vetor(simbolos);
         }
     }
+    
+    private boolean funcoesContainsKey(String id) {
+        for(Funcao funcao: funcoes){
+            if (funcao.getNome().equals(id))
+                return true;
+        }
+        return false;
+    }
+
+    private Funcao funcoesGet(String id) {
+        Funcao r = null;
+        for(Funcao funcao: funcoes){
+            if (funcao.getNome().equals(id))
+                r = funcao;
+        }
+        return r;
+    }
 }
+

@@ -13,10 +13,18 @@ package compilador.semantico;
 public class Simbolo {
     private String tipo;
     private Object conteudo;
-    private Simbolo anterior = null;
+    private boolean inicializado;
 
     public Simbolo(Object conteudo, String tipo) {
         this.conteudo = conteudo;
+        this.inicializado = false;
+        this.tipo = tipo;
+    }
+    
+    public Simbolo(Object conteudo, String tipo, boolean inicializado) {
+        this.conteudo = conteudo;
+        this.inicializado = inicializado;
+        this.tipo = tipo;
     }
 
     public Object getConteudo() {
@@ -27,12 +35,12 @@ public class Simbolo {
         return tipo;
     }
 
-    public Simbolo getAnterior() {
-        return anterior;
+    public boolean isInicializado() {
+        return inicializado;
     }
 
-    public void setAnterior(Simbolo anterior) {
-        this.anterior = anterior;
+    public void setInicializado(boolean inicializado) {
+        this.inicializado = inicializado;
     }
     
     

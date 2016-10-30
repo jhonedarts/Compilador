@@ -7,35 +7,34 @@
 2 , delimitador
 2 c identificador
 2 ; delimitador
-3 real palavra reservada
-3 b identificador
-3 , delimitador
-3 c identificador
-3 ; delimitador
-4 fim palavra reservada
-6 const palavra reservada
-6 inicio palavra reservada
-7 inteiro identificador
-7 a identificador
+3 fim palavra reservada
+5 const palavra reservada
+5 inicio palavra reservada
+6 inteiro identificador
+6 a identificador
+6 << delimitador
+6 2.1 numero
+6 , delimitador
+6 b identificador
+6 << delimitador
+6 4 numero
+6 ; delimitador
+7 real palavra reservada
+7 x identificador
 7 << delimitador
-7 2.1 numero
+7 3.2 numero
 7 , delimitador
-7 b identificador
+7 t identificador
 7 << delimitador
-7 4 numero
+7 1 numero
 7 ; delimitador
-8 real palavra reservada
-8 x identificador
-8 << delimitador
-8 3.2 numero
-8 , delimitador
-8 a identificador
-8 << delimitador
-8 1 numero
-8 ; delimitador
-9 fim palavra reservada
-11 programa palavra reservada
-11 inicio palavra reservada
+8 fim palavra reservada
+10 programa palavra reservada
+10 inicio palavra reservada
+11 var palavra reservada
+11 caractere palavra reservada
+11 a identificador
+11 ; delimitador
 12 a identificador
 12 << delimitador
 12 a identificador
@@ -56,7 +55,7 @@
 13 ; delimitador
 14 escreva palavra reservada
 14 ( delimitador
-14 a identificador
+14 z identificador
 14 ) delimitador
 14 ; delimitador
 16 se palavra reservada
@@ -114,6 +113,15 @@
 22 ) delimitador
 22 faca palavra reservada
 23 inicio palavra reservada
+24 var palavra reservada
+24 caractere palavra reservada
+24 a identificador
+24 <<< delimitador
+24 2 numero
+24 >>> delimitador
+24 , delimitador
+24 u identificador
+24 ; delimitador
 25 vetor identificador
 25 <<< delimitador
 25 i identificador
@@ -142,68 +150,81 @@
 31 i identificador
 31 ) delimitador
 31 inicio palavra reservada
+32 var palavra reservada
+32 caractere palavra reservada
 32 a identificador
-32 << delimitador
-32 a identificador
-32 + operador aritimetico
-32 b identificador
-32 - operador aritimetico
-32 a identificador
-32 ( delimitador
-32 3 numero
-32 + operador aritimetico
-32 1 numero
-32 ) delimitador
 32 ; delimitador
-33 enquanto palavra reservada
+33 a identificador
+33 << delimitador
+33 a identificador
+33 + operador aritimetico
+33 b identificador
+33 - operador aritimetico
+33 a identificador
 33 ( delimitador
-33 i identificador
-33 <= operador relacional
-33 posicaoFim identificador
+33 3 numero
+33 + operador aritimetico
+33 1 numero
 33 ) delimitador
-33 faca palavra reservada
-34 inicio palavra reservada
-36 vetor identificador
-36 <<< delimitador
-36 i identificador
-36 >>> delimitador
-36 << delimitador
-36 vetorTemp identificador
-36 <<< delimitador
-36 i identificador
-36 - operador aritimetico
-36 posicaoInicio identificador
-36 >>> delimitador
-36 ; delimitador
+33 ; delimitador
+34 enquanto palavra reservada
+34 ( delimitador
+34 i identificador
+34 <= operador relacional
+34 posicaoFim identificador
+34 ) delimitador
+34 faca palavra reservada
+35 inicio palavra reservada
+37 vetor identificador
+37 <<< delimitador
 37 i identificador
+37 >>> delimitador
 37 << delimitador
+37 vetorTemp identificador
+37 <<< delimitador
 37 i identificador
-37 + operador aritimetico
-37 1 numero
+37 - operador aritimetico
+37 posicaoInicio identificador
+37 >>> delimitador
 37 ; delimitador
-38 fim palavra reservada
-39 abacate identificador
-39 << delimitador
-39 b identificador
-39 ( delimitador
-39 a identificador
-39 * operador aritimetico
-39 b identificador
-39 / operador aritimetico
-39 ( delimitador
-39 a identificador
-39 + operador aritimetico
-39 5 numero
-39 * operador aritimetico
-39 4 numero
-39 * operador aritimetico
-39 ( delimitador
-39 2 numero
-39 + operador aritimetico
-39 2 numero
-39 ) delimitador
-39 ) delimitador
-39 ) delimitador
-39 ; delimitador
-40 fim palavra reservada
+38 i identificador
+38 << delimitador
+38 i identificador
+38 + operador aritimetico
+38 1 numero
+38 ; delimitador
+39 fim palavra reservada
+40 abacate identificador
+40 << delimitador
+40 b identificador
+40 ( delimitador
+40 a identificador
+40 * operador aritimetico
+40 b identificador
+40 / operador aritimetico
+40 ( delimitador
+40 a identificador
+40 + operador aritimetico
+40 5 numero
+40 * operador aritimetico
+40 4 numero
+40 * operador aritimetico
+40 ( delimitador
+40 2 numero
+40 + operador aritimetico
+40 2 numero
+40 ) delimitador
+40 ) delimitador
+40 ) delimitador
+40 ; delimitador
+41 fim palavra reservada
+43 funcao palavra reservada
+43 inteiro identificador
+43 abacate identificador
+43 ( delimitador
+43 inteiro identificador
+43 i identificador
+43 ) delimitador
+43 inicio palavra reservada
+45 fim palavra reservada
 

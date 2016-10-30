@@ -3,13 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/Sintatico/Erro.java</file>
             <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/Compilador.java</file>
             <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/Sintatico/Funcao.java</file>
-            <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/Sintatico/SintaticoSemantico.java</file>
-            <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/Lexico/Token.java</file>
-            <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/Sintatico/Simbolo.java</file>
-            <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/Lexico/Lexico.java</file>
+            <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/Sintatico/Sintatico.java</file>
+            <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/semantico/Simbolo.java</file>
+            <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/semantico/Semantico.java</file>
+            <file>file:/C:/Users/jhone/Documents/GitHub/Compilador/src/compilador/semantico/TabelaSimbolos.java</file>
         </group>
     </open-files>
 </project-private>

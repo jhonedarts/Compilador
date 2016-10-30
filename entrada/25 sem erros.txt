@@ -2,6 +2,7 @@ programa
 inicio
     var inteiro tamanho, i, vetor<<<tamanho>>>;
         
+    vetor<<<i>>> << 2;
     i << 0;
 
     escreva ("Digite o tamanho do vetor");

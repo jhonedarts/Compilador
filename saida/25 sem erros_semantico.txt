@@ -1,1 +1,2 @@
-Sucesso!
+25 Variavel "vetor" nao inicializada
+84 Variavel "posicaoInicio" ja declarada

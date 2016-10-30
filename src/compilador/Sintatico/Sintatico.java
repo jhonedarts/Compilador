@@ -28,20 +28,22 @@ public class Sintatico {
     private String tipo;
     private Funcao funcao;
     private String parametro;
-    private HashMap<String, Funcao> funcoes;
+    private boolean isVetor;
+    private LinkedList<Funcao> funcoes;
 
     public Sintatico() {
         
     }
  
-    public HashMap<String, Funcao> start(LinkedList<Token> tokens, String nomeArq) throws IOException{   
+    public LinkedList<Funcao> start(LinkedList<Token> tokens, String nomeArq) throws IOException{   
         this.erros = new LinkedList<Erro>();
         this.tokens = new LinkedList<Token>();
-        this.funcoes = new HashMap<String, Funcao>();
+        this.funcoes = new LinkedList<Funcao>();
         
         tipo =null;
         funcao =null;
         parametro = null;
+        isVetor= false;
         nomeArq = nomeArq.split(".txt")[0];
         atual=0;
         this.tokens.addAll(tokens);        
@@ -272,6 +274,7 @@ public class Sintatico {
     private void vetor() throws EndTokensException {
         if(ver().getLexema().equals("<<<")){
             parametro = "vetor "+parametro;
+            isVetor= true;
             consumir();
             exp_aritmetica(); // a fazer   
             vetor2();
@@ -836,7 +839,12 @@ public class Sintatico {
     
     //<Id_Vetor>'<<'<Valor>';'
     private void atribuicao() throws EndTokensException{
+        String id = ver().getLexema();
+        isVetor = false;
         id_vetor();
+        if(funcoesContainsKey(id)&&!isVetor&&!funcoesGet(id).getTipoRetorno().equals("vazio")){
+            funcoesGet(id).setOk(true);
+        }
         if(ver().getLexema().equals("<<")){
             consumir();
             valor();
@@ -867,12 +875,12 @@ public class Sintatico {
             consumir();
             funcao_decl2();
             if(ver().getTipo().equals("identificador")){
-                funcao = new Funcao(ver().getLexema(), tipo);
+                funcao = new Funcao(ver().getLexema(), tipo, ver().getLinha());
                 consumir();
                 if(ver().getLexema().equals("(")){
                     consumir();
                     param_decl_list();
-                    funcoes.put(funcao.getNome(), funcao);
+                    funcoes.add(funcao);
                     if(ver().getLexema().equals(")")){
                         consumir();
                         bloco();
@@ -943,8 +951,8 @@ public class Sintatico {
         if(isTipo()){
             tipo = ver().getLexema();
             consumir();
-        }
-        tipo = "vazio";
+        }else
+            tipo = "vazio";
     }
     
     //<Tipo><Id_Vetor><Param_Decl_List2> | <>
@@ -1281,5 +1289,22 @@ public class Sintatico {
                 vetor();
             }
         }
+    }
+
+    private boolean funcoesContainsKey(String id) {
+        for(Funcao funcao: funcoes){
+            if (funcao.getNome().equals(id))
+                return true;
+        }
+        return false;
+    }
+
+    private Funcao funcoesGet(String id) {
+        Funcao r = null;
+        for(Funcao funcao: funcoes){
+            if (funcao.getNome().equals(id))
+                r = funcao;
+        }
+        return r;
     }
 }
