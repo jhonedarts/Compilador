@@ -18,7 +18,7 @@
 7 inteiro identificador
 7 a identificador
 7 << delimitador
-7 2 numero
+7 2.1 numero
 7 , delimitador
 7 b identificador
 7 << delimitador

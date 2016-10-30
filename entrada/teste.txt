@@ -4,7 +4,7 @@ real b, c;
 fim
 
 const inicio
-inteiro a<<2, b<<4;
+inteiro a<<2.1, b<<4;
 real x<< 3.2, a<<1;
 fim
 

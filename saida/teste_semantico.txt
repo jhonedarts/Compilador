@@ -1,2 +1,6 @@
-3 Variavel b já declarada
-3 Variavel c já declarada
+3 Variavel b ja declarada
+3 Variavel c ja declarada
+7 Variavel a ja declarada
+7 Tipos incompativeis, inteiro e 2.1
+7 Variavel b ja declarada
+8 Variavel a ja declarada
