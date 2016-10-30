@@ -4,3 +4,4 @@
 7 Tipos incompativeis, inteiro e 2.1
 7 Variavel b ja declarada
 8 Variavel a ja declarada
+8 Tipos incompativeis, real e 1

@@ -27,7 +27,7 @@ public class Semantico {
     private String tipo;
     private Funcao funcao;
     private String parametro;
-    private HashMap<String, Simbolo> simbolos;
+    private TabelaSimbolos simbolos;
     private LinkedList<Erro> erros;
     private HashMap<String, Funcao> funcoes;
 
@@ -38,7 +38,7 @@ public class Semantico {
     public void start(LinkedList<Token> tokens, HashMap<String, Funcao> funcoes, String nomeArq) throws IOException{
         this.tokens = new LinkedList<Token>();
         this.erros = new LinkedList<Erro>();
-        this.simbolos = new HashMap<String, Simbolo>();
+        this.simbolos = new TabelaSimbolos(null);
         this.funcoes = funcoes;
         tipo =null;
         funcao =null;
@@ -125,7 +125,7 @@ public class Semantico {
         try {
             if (ver().getLexema().equals("programa")){
                 consumir();
-                bloco();                
+                bloco(simbolos);                
             }
         } catch (EndTokensException ex) {
             System.out.println(ex);
@@ -137,7 +137,7 @@ public class Semantico {
     private void funcoes(){
         try {
             //System.out.println(ver().getLexema());// so pra checar se o arquivo acabou, se sim, dara a exception
-            funcao_decl();// tratar fim de arquivo dentro desta tb, pois ai seria erro
+            funcao_decl(simbolos);// tratar fim de arquivo dentro desta tb, pois ai seria erro
             funcoes();
         } catch (EndTokensException ex) {
             //fim de arquivo
@@ -154,7 +154,7 @@ public class Semantico {
                 if (ver().getLexema().equals("inicio")){
                     consumir();
                     if (!ver().getLexema().equals("fim")) // caso esteja vazio
-                        varlist();// fica dentro do if mesmo, pq se der erro no else 
+                        varlist(simbolos);// fica dentro do if mesmo, pq se der erro no else 
                                 //escolho pra onde ir e nao obritoriamente ir pro proximo
                     else if (igual(ver().getLexema(),"programa", "const", "inicio")){
                         //nothing, deixar passar
@@ -170,50 +170,50 @@ public class Semantico {
     }
 
     // <tipo> <R> <varlist> | <>
-    private void varlist() throws EndTokensException {
+    private void varlist(TabelaSimbolos simbolos) throws EndTokensException {
         if (igual(ver().getLexema(),"fim","programa","inicio")){
             return;
         }
         if (isTipo()){
             tipo = ver().getLexema();
             consumir();
-            R();
-            varlist();
+            R(simbolos);
+            varlist(simbolos);
         }
         
     }
     
     //id <vetor> <R2>
-    private void R() throws EndTokensException {
+    private void R(TabelaSimbolos simbolos) throws EndTokensException {
         if (ver().getTipo().equals("identificador")){
             String id = ver().getLexema();
             consumir();
-            vetor();
+            vetor(simbolos);
             if(simbolos.get(id)==null){//nao declarado
-                simbolos.put(id, new Simbolo(ver(), tipo, 0));
+                simbolos.put(id, new Simbolo(ver(), tipo));
             }else{//já declarado
                 erros.add(new Erro("Variavel "+id+" ja declarada", ver().getLinha()));
             }
-            R2();
+            R2(simbolos);
         }
     }
     //','<R> | ';'
-    private void R2() throws EndTokensException{
+    private void R2(TabelaSimbolos simbolos) throws EndTokensException{
         if(ver().getLexema().equals(",")){
             consumir();
-            R();
+            R(simbolos);
         } else if(ver().getLexema().equals(";")){
             consumir();
         } 
     }
     //'<<<'<Exp_Aritmetica><vetor2>'>>>' | <>
-    private void vetor() throws EndTokensException {
+    private void vetor(TabelaSimbolos simbolos) throws EndTokensException {
         if(ver().getLexema().equals("<<<")){
             tipo = tipo+"Vetor";
             parametro = parametro+"Vetor";
             consumir();
-            exp_aritmetica(); // a fazer   
-            vetor2();
+            exp_aritmetica(simbolos);   
+            vetor2(simbolos);
             if(ver().getLexema().equals(">>>")){
                 consumir();                
             }
@@ -221,11 +221,11 @@ public class Semantico {
     }
     
     //','<Exp_Aritmetica><Vetor2> | <>
-    private void vetor2() throws EndTokensException{
+    private void vetor2(TabelaSimbolos simbolos) throws EndTokensException{
         if(ver().getLexema().equals(",")){
             consumir();
-            exp_aritmetica();
-            vetor2();
+            exp_aritmetica(simbolos);
+            vetor2(simbolos);
         }
     }
     
@@ -239,7 +239,7 @@ public class Semantico {
                 if (ver().getLexema().equals("inicio")){
                     consumir();
                     if (!ver().getLexema().equals("fim"))// se nao tiver vazio
-                        constlist();// fica dentro do if mesmo, pq se der erro no else 
+                        constlist(simbolos);// fica dentro do if mesmo, pq se der erro no else 
                                 //escolho pra onde ir e nao obritoriamente ir pro proximo
                     else if (igual(ver().getLexema(),"programa","inicio")){
                         //nothing
@@ -255,46 +255,47 @@ public class Semantico {
     }
     
     //<Tipo><Const_Decl><Constlist> | <>
-    private void constlist() throws EndTokensException{
+    private void constlist(TabelaSimbolos simbolos) throws EndTokensException{
         if (igual(ver().getLexema(),"fim","programa","inicio")){
             return;
         }
         if (isTipo()){
             tipo = ver().getLexema();
             consumir();
-            const_decl();
-            constlist();
+            const_decl(simbolos);
+            constlist(simbolos);
         }       
     }
     
     //id'<<'<Literal><Const_Decl2>
-    private void const_decl() throws EndTokensException{
+    private void const_decl(TabelaSimbolos simbolos) throws EndTokensException{
         if(ver().getTipo().equals("identificador")){
             String id = ver().getLexema();
             if(simbolos.get(id)==null){//nao declarado
-                simbolos.put(id, new Simbolo(ver(), tipo, 0));//zero = global
+                simbolos.put(id, new Simbolo(ver(), tipo));//zero = global
             }else{//já declarado
                 erros.add(new Erro("Variavel "+id+" ja declarada", ver().getLinha()));
             }
             consumir();  
             if(ver().getLexema().equals("<<")){
-                consumir(); if(isLiteral()){
+                consumir(); 
+                if(isLiteral()){
                     if(!tipo.equals(checarTipo())){
                         erros.add(new Erro("Tipos incompativeis, "+tipo+" e "+ver().getLexema(), ver().getLinha()));
                     }
                     consumir();
-                    const_decl2();
+                    const_decl2(simbolos);
                 }
             }          
         }
     }
     // ','id'<<'<Literal><Const_Decl2> | ';'
-    private void const_decl2() throws EndTokensException{
+    private void const_decl2(TabelaSimbolos simbolos) throws EndTokensException{
         if (ver().getLexema().equals(",")){
             consumir();
             if(ver().getTipo().equals("identificador")){
                 if(simbolos.get(ver().getLexema())==null){//nao declarado
-                    simbolos.put(ver().getLexema(), new Simbolo(ver(), tipo, 0));
+                    simbolos.put(ver().getLexema(), new Simbolo(ver(), tipo));
                 }else{//já declarado
                     erros.add(new Erro("Variavel "+ver().getLexema()+" ja declarada", ver().getLinha()));
                 }
@@ -302,9 +303,11 @@ public class Semantico {
                 if (ver().getLexema().equals("<<")){
                     consumir();     
                     if(isLiteral()){
-                        
+                        if(!tipo.equals(checarTipo())){
+                            erros.add(new Erro("Tipos incompativeis, "+tipo+" e "+ver().getLexema(), ver().getLinha()));
+                        }
                         consumir();
-                        const_decl2();
+                        const_decl2(simbolos);
                     }
                 }
             }            
@@ -316,10 +319,14 @@ public class Semantico {
     ////////////////////////    Bloco      /////////////////////////////
     
     //'inicio'<Corpo_Bloco>'fim'
-    private void bloco() throws EndTokensException{
+    private void bloco(TabelaSimbolos simbolosAnterior) throws EndTokensException{
+        //escopo
+        TabelaSimbolos simbolosNovo = new TabelaSimbolos(simbolosAnterior);
+        simbolosAnterior.setProximo(simbolosNovo);
+        
         if(ver().getLexema().equals("inicio")){
             consumir();
-            corpo_bloco();
+            corpo_bloco(simbolosNovo);
         }
         if(ver().getLexema().equals("fim")){
             consumir();
@@ -327,18 +334,20 @@ public class Semantico {
     }
     //<Var_Local><Corpo_Bloco> | <Comando><Corpo_Bloco> 
     // | <Chamada_Funcao>';'<Corpo_Bloco> | <Atribuicao><Corpo_Bloco> | <>
-    private void corpo_bloco() throws EndTokensException{
+    private void corpo_bloco(TabelaSimbolos simbolos) throws EndTokensException{
         //System.out.println("corpo_bloco");
+        
+        
         if (igual(ver().getLexema(),"fim", "funcao")){            
             return;
         }
         if (igual(ver().getLexema(), "var","inteiro", "real", "booleano", "caractere", "cadeia")){
-            var_local();            
+            var_local(simbolos);            
         } else if (igual(ver().getLexema(), "escreva", "leia", "se", "enquanto")){
-            comando();
+            comando(simbolos);
         } else if (ver().getTipo().equals("identificador") ){
             if (verLLX(1).getLexema().equals("(")){
-                chamada_funcao();
+                chamada_funcao(simbolos);
                 if(ver().getLexema().equals(";"))
                     consumir();
                 else{
@@ -346,31 +355,31 @@ public class Semantico {
                     //deixa passar somente ai corpo_bloco resolvera
                 }
             }else{
-                atribuicao();
+                atribuicao(simbolos);
             }
         }
-        corpo_bloco();
+        corpo_bloco(simbolos);
     }
     ////////////////////////    variaveis locais    //////////////////////////
     
     //'var'<Tipo><Id_Vetor><Var_Local2>
-    private void var_local() throws EndTokensException{
+    private void var_local(TabelaSimbolos simbolos) throws EndTokensException{
         if (ver().getLexema().equals("var")){
             consumir();
             if(isTipo()){
                 consumir();
-                id_vetor();
-                var_local2();
+                id_vetor(simbolos);
+                var_local2(simbolos);
             }
         }
     }
     
     //','<Id_Vetor><Var_Local2> | ';'
-    private void var_local2() throws EndTokensException{
+    private void var_local2(TabelaSimbolos simbolos) throws EndTokensException{
         if (ver().getLexema().equals(",")){
             consumir();
-            id_vetor();
-            var_local2();
+            id_vetor(simbolos);
+            var_local2(simbolos);
         }else if(ver().getLexema().equals(";")){
             consumir();
         }
@@ -378,25 +387,25 @@ public class Semantico {
     ////////////////////////    comandos    /////////////////////////////
     
     //<Escreva> | <Leia> | <Se> | <Enquanto>
-    private void comando() throws EndTokensException{              
+    private void comando(TabelaSimbolos simbolos) throws EndTokensException{              
         if (ver().getLexema().equals("escreva")){
-            escreva();
+            escreva(simbolos);
         }else if(ver().getLexema().equals("leia")){
-            leia();
+            leia(simbolos);
         }else if (ver().getLexema().equals("se")){
-            se();
+            se(simbolos);
         }else if (ver().getLexema().equals("enquanto")){
-            enquanto();
+            enquanto(simbolos);
         }        
     }
     
     //'escreva''('<Escreva_Params>')'';'
-    private void escreva() throws EndTokensException{
+    private void escreva(TabelaSimbolos simbolos) throws EndTokensException{
         if (ver().getLexema().equals("escreva")){               
             consumir();
             if(ver().getLexema().equals("(")){
                 consumir();
-                escreva_params();
+                escreva_params(simbolos);
                 if(ver().getLexema().equals(")"))
                     consumir();
                 
@@ -407,34 +416,34 @@ public class Semantico {
         }     
     }
     //<Exp_Aritmetica><Escreva_Param2> | caractere_t<Escreva_Param2> | cadeia_t<Escreva_Param2>
-    private void escreva_params() throws EndTokensException{
+    private void escreva_params(TabelaSimbolos simbolos) throws EndTokensException{
         //System.out.println(ver().getLexema()+" escreva_params");
         if(ver().getTipo().equals("cadeia")){
             consumir();
-            escreva_params2();
+            escreva_params2(simbolos);
         }//<Valor_Numerico> ::= '('<Exp_Aritmetica>')' | <Id_Vetor> | <Chamada_Funcao> | numero_t
         else if(ver().getTipo().equals("caractere")){
             consumir();
-            escreva_params2();
+            escreva_params2(simbolos);
         }else{
-            exp_aritmetica(); 
-            escreva_params2();
+            exp_aritmetica(simbolos); 
+            escreva_params2(simbolos);
         }
     }
 
     //<Escreva_Param2> ::= ','<Escreva_Params> | <>
-    private void escreva_params2() throws EndTokensException {
+    private void escreva_params2(TabelaSimbolos simbolos) throws EndTokensException {
         if(ver().getLexema().equals(","))
-            escreva_params();    
+            escreva_params(simbolos);    
     }
     //'leia''('<Leia_Params>')'';'
     
-    private void leia() throws EndTokensException{
+    private void leia(TabelaSimbolos simbolos) throws EndTokensException{
         if (ver().getLexema().equals("leia")){               
             consumir();
             if(ver().getLexema().equals("(")){
                 consumir();
-                leia_params();
+                leia_params(simbolos);
                 if(ver().getLexema().equals(")"))
                     consumir();
                 
@@ -446,36 +455,36 @@ public class Semantico {
     }
     
     //<Id_Vetor><Leia_Param2>
-    private void leia_params() throws EndTokensException {
+    private void leia_params(TabelaSimbolos simbolos) throws EndTokensException {
         if(ver().getLexema().equals(")"))
             return;
         else{
-            id_vetor();
-            leia_params2();
+            id_vetor(simbolos);
+            leia_params2(simbolos);
         }
     }
     
-    //<Leia_Param2> ::= ','<Leia_Params> | <>
-    private void leia_params2() throws EndTokensException {
+    //','<Leia_Params> | <>
+    private void leia_params2(TabelaSimbolos simbolos) throws EndTokensException {
         if(ver().getLexema().equals(",")){
             consumir();
-            leia_params();
+            leia_params(simbolos);
         }     
     }
     
     //'se''('<Exp_Logica>')''entao'<Bloco><Senao>
-    private void se() throws EndTokensException {
+    private void se(TabelaSimbolos simbolos) throws EndTokensException {
         if (ver().getLexema().equals("se")){
             consumir();
             if(ver().getLexema().equals("(")){
                 consumir();
-                exp_logica();
+                exp_logica(simbolos);
                 if(ver().getLexema().equals(")")){
                     consumir();
                     if(ver().getLexema().equals("entao")){
                         consumir();
-                        bloco();
-                        senao();
+                        bloco(simbolos);
+                        senao(simbolos);
                     }
                 }
             }            
@@ -483,26 +492,26 @@ public class Semantico {
     }
     
     //<Senao> ::= 'senao'<Bloco> | <>
-    private void senao() throws EndTokensException {
+    private void senao(TabelaSimbolos simbolos) throws EndTokensException {
         if(ver().getLexema().equals("senao")){
             consumir();
-            bloco();
+            bloco(simbolos);
         }
             
     }
     
     //<Enquanto> ::= 'enquanto''('<Exp_Logica>')''faca'<Bloco>
-    private void enquanto() throws EndTokensException{
+    private void enquanto(TabelaSimbolos simbolos) throws EndTokensException{
         if(ver().getLexema().equals("enquanto")){
             consumir();
             if(ver().getLexema().equals("(")){
                 consumir();
-                exp_logica();
+                exp_logica(simbolos);
                 if(ver().getLexema().equals(")")){
                     consumir();
                     if(ver().getLexema().equals("faca")){
                         consumir();
-                        bloco();
+                        bloco(simbolos);
                     }
                 }    
             }
@@ -511,11 +520,11 @@ public class Semantico {
     ////////////////////////    atribuicao    /////////////////////////////
     
     //<Id_Vetor>'<<'<Valor>';'
-    private void atribuicao() throws EndTokensException{
-        id_vetor();
+    private void atribuicao(TabelaSimbolos simbolos) throws EndTokensException{
+        id_vetor(simbolos);
         if(ver().getLexema().equals("<<")){
             consumir();
-            valor();
+            valor(simbolos);
             if(ver().getLexema().equals(";")){
                 consumir();
             }
@@ -525,18 +534,18 @@ public class Semantico {
     ////////////////////////    funcao    /////////////////////////////
     
     //'funcao'<Funcao_Decl2>id'('<Param_Decl_List>')'<Bloco>
-    private void funcao_decl() throws EndTokensException {
+    private void funcao_decl(TabelaSimbolos simbolos) throws EndTokensException {
         if(ver().getLexema().equals("funcao")){
             consumir();
-            funcao_decl2();
+            funcao_decl2(simbolos);
             if(ver().getTipo().equals("identificador")){
                 consumir();
                 if(ver().getLexema().equals("(")){
                     consumir();
-                    param_decl_list();
+                    param_decl_list(simbolos);
                     if(ver().getLexema().equals(")")){
                         consumir();
-                        bloco();
+                        bloco(simbolos);
                     }
                 }
             }
@@ -544,14 +553,14 @@ public class Semantico {
     }
     
     //<Tipo> | <>
-    private void funcao_decl2() throws EndTokensException{
+    private void funcao_decl2(TabelaSimbolos simbolos) throws EndTokensException{
         if(isTipo()){
             consumir();
         }
     }
     
     //<Tipo><Id_Vetor><Param_Decl_List2> | <>
-    private void param_decl_list() throws EndTokensException{
+    private void param_decl_list(TabelaSimbolos simbolos) throws EndTokensException{
         if(igual(ver().getLexema(), "inicio", "var", 
                                 "escreva", "leia", "se", "enquanto", "(", "fim", "funcao"))
             return;
@@ -559,13 +568,13 @@ public class Semantico {
             return;
         if(isTipo()){
             consumir();
-            id_vetor();//ve se é um vetor
-            param_decl_list2();
+            id_vetor(simbolos);//ve se é um vetor
+            param_decl_list2(simbolos);
         }
     }
 
     //','<Tipo><Id_Vetor><Param_Decl_List2> | <>
-    private void param_decl_list2() throws EndTokensException{
+    private void param_decl_list2(TabelaSimbolos simbolos) throws EndTokensException{
         if(igual(ver().getLexema(), ")", "inicio", "var", 
                                         "escreva", "leia", "se", "enquanto", "(", "fim", "funcao"))
             return;
@@ -573,20 +582,20 @@ public class Semantico {
             consumir();
             if(isTipo()){
                 consumir();
-                id_vetor();//ve se é um vetor
-                param_decl_list2();
+                id_vetor(simbolos);//ve se é um vetor
+                param_decl_list2(simbolos);
             }
         }
     }
     
     //id'('<Param_Cham_List>')'
-    private void chamada_funcao() throws EndTokensException{
+    private void chamada_funcao(TabelaSimbolos simbolos) throws EndTokensException{
         if(ver().getTipo().equals("identificador")){
             consumir();
         }
         if(ver().getLexema().equals("(")){
             consumir();
-            param_cham_list();
+            param_cham_list(simbolos);
         }
         if(ver().getLexema().equals(")"))
             consumir();
@@ -594,198 +603,198 @@ public class Semantico {
     }
     
     //<Valor><Param_Cham_List2> | <>
-    private void param_cham_list() throws EndTokensException{
+    private void param_cham_list(TabelaSimbolos simbolos) throws EndTokensException{
         //System.out.println(ver().getLexema()+" param_cham_list");
         if(ver().getLexema().equals(")"))
             return;
-        valor();
+        valor(simbolos);
         //System.out.println(ver().getLexema()+" param_cham_list2");
-        param_cham_list2();
+        param_cham_list2(simbolos);
     }
     
     //','<Valor><Param_Cham_List2> | <>
-    private void param_cham_list2() throws EndTokensException{
+    private void param_cham_list2(TabelaSimbolos simbolos) throws EndTokensException{
         if(igual(ver().getLexema(), ")", "inicio", "var", 
                                         "escreva", "leia", "se", "enquanto", "(", "fim", "funcao"))
             return;
         if(ver().getLexema().equals(",")){
             consumir();
-            valor();
-            param_cham_list2();            
+            valor(simbolos);
+            param_cham_list2(simbolos);            
         }
     }
     
     ////////////////////////    expressoes    /////////////////////////////
     
     //<Exp_Aritmetica2><Exp_SomaSub>
-    private void exp_aritmetica() throws EndTokensException {
-        exp_aritmetica2();
-        exp_somasub();
+    private void exp_aritmetica(TabelaSimbolos simbolos) throws EndTokensException {
+        exp_aritmetica2(simbolos);
+        exp_somasub(simbolos);
     }
     
     //<Operador_A1><Exp_Aritmetica2><Exp_SomaSub> | <>
-    private void exp_somasub() throws EndTokensException{
+    private void exp_somasub(TabelaSimbolos simbolos) throws EndTokensException{
         if (igual(ver().getLexema(),"+", "-")){//<operador_a1> ::= + | -
             consumir();
-            exp_aritmetica2();
-            exp_somasub();
+            exp_aritmetica2(simbolos);
+            exp_somasub(simbolos);
         }        
     }
     
     //<Valor_Numerico><Exp_MultDiv>
-    private void exp_aritmetica2() throws EndTokensException{
-        valor_numerico();
-        exp_muldiv();
+    private void exp_aritmetica2(TabelaSimbolos simbolos) throws EndTokensException{
+        valor_numerico(simbolos);
+        exp_muldiv(simbolos);
     }
     
     //<Operador_A2><Valor_Numerico><Exp_MultDiv> | <>
-    private void exp_muldiv() throws EndTokensException{
+    private void exp_muldiv(TabelaSimbolos simbolos) throws EndTokensException{
         if (igual(ver().getLexema(),"/", "*")){//<operador_a2> ::= * | /
             consumir();
-            valor_numerico();
-            exp_muldiv();
+            valor_numerico(simbolos);
+            exp_muldiv(simbolos);
         }
     }
     
     //'('<Exp_Aritmetica>')' | <Id_Vetor> | <Chamada_Funcao> | numero_t
-    private void valor_numerico() throws EndTokensException{
+    private void valor_numerico(TabelaSimbolos simbolos) throws EndTokensException{
         if(ver().getLexema().equals("(")){
             consumir();
-            exp_aritmetica();
+            exp_aritmetica(simbolos);
             if(ver().getLexema().equals(")")){
                 consumir();
             }
         }else if(ver().getTipo().equals("identificador")){
             if(verLLX(1).getLexema().equals("("))                
-                chamada_funcao();
+                chamada_funcao(simbolos);
             else
-                id_vetor();
+                id_vetor(simbolos);
         }else if (ver().getTipo().equals("numero"))
             consumir();
             
     }
     
     //<Exp_Logica2><Exp_Ou>
-    private void exp_logica() throws EndTokensException {
-        exp_logica2();
-        exp_ou();
+    private void exp_logica(TabelaSimbolos simbolos) throws EndTokensException {
+        exp_logica2(simbolos);
+        exp_ou(simbolos);
         if(igual(ver().getLexema(), "=", "<>")){
             consumir();
-            exp_logica();
+            exp_logica(simbolos);
         }
     }
     
     //'ou'<Exp_Logica2><Exp_Ou> | <>
-    private void exp_ou() throws EndTokensException{
+    private void exp_ou(TabelaSimbolos simbolos) throws EndTokensException{
         if(ver().getLexema().equals("ou")){
             consumir();
-            exp_logica2();
-            exp_ou();
+            exp_logica2(simbolos);
+            exp_ou(simbolos);
         }
     }
     
     //<Exp_Nao><Exp_E>
-    private void exp_logica2() throws EndTokensException{
-        exp_nao();
-        exp_e();
+    private void exp_logica2(TabelaSimbolos simbolos) throws EndTokensException{
+        exp_nao(simbolos);
+        exp_e(simbolos);
     }
     
     //'e'<Exp_Nao><Exp_E> | <>
-    private void exp_e() throws EndTokensException{
+    private void exp_e(TabelaSimbolos simbolos) throws EndTokensException{
         if(ver().getLexema().equals("e")){
             consumir();
-            exp_nao();
-            exp_e();
+            exp_nao(simbolos);
+            exp_e(simbolos);
         }
     }
     
     //'nao'<Valor_Booleano> | <Valor_Booleano>
-    private void exp_nao() throws EndTokensException{
+    private void exp_nao(TabelaSimbolos simbolos) throws EndTokensException{
         //System.out.println(ver().getLexema()+" nao");
         if(ver().getLexema().equals("nao")){
             consumir();
-            valor_booleano();
+            valor_booleano(simbolos);
         }else
-            valor_booleano();
+            valor_booleano(simbolos);
     }
     
     //booleano_t | <Exp_Relacional>
-    private void valor_booleano() throws EndTokensException{
+    private void valor_booleano(TabelaSimbolos simbolos) throws EndTokensException{
         if(igual(ver().getLexema(),"verdadeiro", "falso")){
             consumir();
         }else
-            exp_relacional();
+            exp_relacional(simbolos);
     }
     
     //<Exp_Aritm_Logica><Exp_Relacional2>
-    private void exp_relacional() throws EndTokensException{
+    private void exp_relacional(TabelaSimbolos simbolos) throws EndTokensException{
         //System.out.println(ver().getLexema()+" exp_relacional");
-        exp_arim_logica();
-        exp_relacional2();
+        exp_arim_logica(simbolos);
+        exp_relacional2(simbolos);
     }
     
     //<Operador_Relacional><Exp_Aritm_Logica> | <>
-    private void exp_relacional2() throws EndTokensException{
+    private void exp_relacional2(TabelaSimbolos simbolos) throws EndTokensException{
         //System.out.println(ver().getLexema()+" exp_relacional 2");
         if(igual(ver().getLexema(), "<", "<=", ">", ">=", "<>", "=")){
             consumir();
-            exp_arim_logica();
+            exp_arim_logica(simbolos);
         }
     }
     
     //<Exp_Aritm_Logica2><Exp_SomaSub_Logica>
-    private void exp_arim_logica() throws EndTokensException{
-        exp_arim_logica2();
-        exp_somasub_logica();
+    private void exp_arim_logica(TabelaSimbolos simbolos) throws EndTokensException{
+        exp_arim_logica2(simbolos);
+        exp_somasub_logica(simbolos);
     }
     
     //<Operador_A1><Exp_Aritm_Logica2><Exp_SomaSub_Logica> | <>
-    private void exp_somasub_logica() throws EndTokensException{
+    private void exp_somasub_logica(TabelaSimbolos simbolos) throws EndTokensException{
         if(igual(ver().getLexema(), "+", "-")){
             consumir();
-            exp_arim_logica2();
-            exp_somasub_logica();
+            exp_arim_logica2(simbolos);
+            exp_somasub_logica(simbolos);
         }        
     }
         
     //<Numerico_Logico><Exp_MultDiv_Logica>
-    private void exp_arim_logica2() throws EndTokensException{
-        numero_logico();
-        exp_multdiv_logica();
+    private void exp_arim_logica2(TabelaSimbolos simbolos) throws EndTokensException{
+        numero_logico(simbolos);
+        exp_multdiv_logica(simbolos);
     }
     
     //<Operador_A2><Numerico_Logico><Exp_MultDiv_Logica> | <>
-    private void exp_multdiv_logica() throws EndTokensException{
+    private void exp_multdiv_logica(TabelaSimbolos simbolos) throws EndTokensException{
         if(igual(ver().getLexema(), "/", "*")){
             consumir();
-            numero_logico();
-            exp_multdiv_logica();
+            numero_logico(simbolos);
+            exp_multdiv_logica(simbolos);
         }
     }
     
     //'('<Exp_Aritm_Logica>')' | <Id_Vetor> | <Chamada_Funcao> | numero_t
-    private void numero_logico() throws EndTokensException{
+    private void numero_logico(TabelaSimbolos simbolos) throws EndTokensException{
         //System.out.println(ver().getLexema()+" numero_logico");
         if(ver().getLexema().equals("(")){
             consumir();
             if (igual(verLLX(1).getLexema(),"+", "-", "/", "*"))
-                exp_arim_logica();
+                exp_arim_logica(simbolos);
             else
-                exp_logica();
+                exp_logica(simbolos);
             //System.out.println(ver().getLexema()+" -------------------------------------------");
             if(ver().getLexema().equals(")")){
                 consumir();
             }
-            exp_logica();
+            exp_logica(simbolos);
         }else if(ver().getTipo().equals("identificador")){
             if(verLLX(1).getLexema().equals("("))
-                chamada_funcao();                
+                chamada_funcao(simbolos);                
             else
-                id_vetor();
+                id_vetor(simbolos);
         }else if(ver().getTipo().equals("numero")){
             consumir();
         }else if (igual(ver().getLexema(),"verdadeiro", "falso")){
-            valor_booleano();
+            valor_booleano(simbolos);
         }
     }
     ////////////////////////    outros    /////////////////////////////
@@ -819,18 +828,18 @@ public class Semantico {
     //vetor definido em variaveis
     
     //<Exp_Logica> | caractere_t | cadeia_t
-    private void valor() throws EndTokensException{
+    private void valor(TabelaSimbolos simbolos) throws EndTokensException{
         //System.out.println(ver().getLexema()+" valor");
         if (igual(ver().getTipo(),"caractere", "cadeia"))
             consumir();
         else
-            exp_logica();
+            exp_logica(simbolos);
     }
     //id<Vetor>
-    private void id_vetor() throws EndTokensException{        
+    private void id_vetor(TabelaSimbolos simbolos) throws EndTokensException{        
         if(ver().getTipo().equals("identificador")){
             consumir();
-            vetor();
+            vetor(simbolos);
         }
     }
 }

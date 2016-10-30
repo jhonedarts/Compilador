@@ -13,12 +13,10 @@ package compilador.semantico;
 public class Simbolo {
     private String tipo;
     private Object conteudo;
-    private int escopo;
     private Simbolo anterior = null;
 
-    public Simbolo(Object conteudo, String tipo, int escopo) {
+    public Simbolo(Object conteudo, String tipo) {
         this.conteudo = conteudo;
-        this.escopo = escopo;
     }
 
     public Object getConteudo() {
@@ -27,10 +25,6 @@ public class Simbolo {
 
     public String getTipo() {
         return tipo;
-    }
-
-    public int getEscopo() {
-        return escopo;
     }
 
     public Simbolo getAnterior() {
