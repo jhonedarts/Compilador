@@ -113,6 +113,7 @@
 29 ; delimitador
 31 fim palavra reservada
 33 funcao palavra reservada
+33 inteiro identificador
 33 mergeSort identificador
 33 ( delimitador
 33 inteiro identificador
@@ -128,269 +129,291 @@
 33 posicaoFim identificador
 33 ) delimitador
 34 inicio palavra reservada
-35 var palavra reservada
-35 inteiro identificador
-35 i identificador
-35 , delimitador
-35 j identificador
-35 , delimitador
-35 k identificador
-35 , delimitador
-35 metadeTamanho identificador
-35 , delimitador
-35 vetorTemp identificador
-35 <<< delimitador
-35 10 numero
-35 >>> delimitador
+35 mergeSort identificador
+35 << delimitador
+35 2 numero
 35 ; delimitador
-37 se palavra reservada
+36 mergeSort identificador
+36 << delimitador
+36 2 numero
+36 + operador aritimetico
+36 mergeSort identificador
+36 ; delimitador
+37 leia palavra reservada
 37 ( delimitador
-37 posicaoInicio identificador
-37 <> operador relacional
-37 posicaoFim identificador
+37 mergeSort identificador
 37 ) delimitador
-37 entao palavra reservada
-38 inicio palavra reservada
+37 ; delimitador
+38 vetor identificador
+38 <<< delimitador
+38 mergeSort identificador
+38 >>> delimitador
+38 << delimitador
+38 2 numero
+38 ; delimitador
+39 var palavra reservada
+39 inteiro identificador
+39 i identificador
+39 , delimitador
+39 j identificador
+39 , delimitador
+39 k identificador
+39 , delimitador
 39 metadeTamanho identificador
-39 << delimitador
-39 ( delimitador
-39 posicaoInicio identificador
-39 + operador aritimetico
-39 posicaoFim identificador
-39 ) delimitador
-39 / operador aritimetico
-39 2 numero
+39 , delimitador
+39 vetorTemp identificador
+39 <<< delimitador
+39 10 numero
+39 >>> delimitador
 39 ; delimitador
-40 mergeSort identificador
-40 ( delimitador
-40 vetor identificador
-40 , delimitador
-40 posicaoInicio identificador
-40 , delimitador
-40 metadeTamanho identificador
-40 ) delimitador
-40 ; delimitador
-41 mergeSort identificador
+41 se palavra reservada
 41 ( delimitador
-41 vetor identificador
-41 , delimitador
-41 metadeTamanho identificador
-41 + operador aritimetico
-41 1 numero
-41 , delimitador
+41 posicaoInicio identificador
+41 <> operador relacional
 41 posicaoFim identificador
 41 ) delimitador
-41 ; delimitador
-43 i identificador
+41 entao palavra reservada
+42 inicio palavra reservada
+43 metadeTamanho identificador
 43 << delimitador
+43 ( delimitador
 43 posicaoInicio identificador
+43 + operador aritimetico
+43 posicaoFim identificador
+43 ) delimitador
+43 / operador aritimetico
+43 2 numero
 43 ; delimitador
-44 j identificador
-44 << delimitador
+44 mergeSort identificador
+44 ( delimitador
+44 vetor identificador
+44 , delimitador
+44 posicaoInicio identificador
+44 , delimitador
 44 metadeTamanho identificador
-44 + operador aritimetico
-44 1 numero
+44 ) delimitador
 44 ; delimitador
-45 k identificador
-45 << delimitador
-45 0 numero
+45 mergeSort identificador
+45 ( delimitador
+45 vetor identificador
+45 , delimitador
+45 metadeTamanho identificador
+45 + operador aritimetico
+45 1 numero
+45 , delimitador
+45 posicaoFim identificador
+45 ) delimitador
 45 ; delimitador
-47 enquanto palavra reservada
-47 ( delimitador
 47 i identificador
-47 < delimitador
-47 ( delimitador
-47 metadeTamanho identificador
-47 + operador aritimetico
-47 1 numero
-47 ) delimitador
-47 ou operador logico
-47 j identificador
-47 < delimitador
-47 ( delimitador
-47 posicaoFim identificador
-47 + operador aritimetico
-47 1 numero
-47 ) delimitador
-47 ) delimitador
-47 faca palavra reservada
-48 inicio palavra reservada
-49 se palavra reservada
-49 ( delimitador
-49 nao operador logico
-49 ( delimitador
-49 i identificador
-49 <> operador relacional
-49 ( delimitador
-49 metadeTamanho identificador
-49 + operador aritimetico
-49 1 numero
-49 ) delimitador
-49 ) delimitador
-49 ) delimitador
-49 entao palavra reservada
-50 inicio palavra reservada
-51 vetorTemp identificador
-51 <<< delimitador
-51 k identificador
-51 >>> delimitador
-51 << delimitador
-51 vetor identificador
-51 <<< delimitador
+47 << delimitador
+47 posicaoInicio identificador
+47 ; delimitador
+48 j identificador
+48 << delimitador
+48 metadeTamanho identificador
+48 + operador aritimetico
+48 1 numero
+48 ; delimitador
+49 k identificador
+49 << delimitador
+49 0 numero
+49 ; delimitador
+51 enquanto palavra reservada
+51 ( delimitador
+51 i identificador
+51 < delimitador
+51 ( delimitador
+51 metadeTamanho identificador
+51 + operador aritimetico
+51 1 numero
+51 ) delimitador
+51 ou operador logico
 51 j identificador
-51 >>> delimitador
-51 ; delimitador
-52 j identificador
-52 << delimitador
-52 j identificador
-52 + operador aritimetico
-52 1 numero
-52 ; delimitador
-53 k identificador
-53 << delimitador
-53 k identificador
+51 < delimitador
+51 ( delimitador
+51 posicaoFim identificador
+51 + operador aritimetico
+51 1 numero
+51 ) delimitador
+51 ) delimitador
+51 faca palavra reservada
+52 inicio palavra reservada
+53 se palavra reservada
+53 ( delimitador
+53 nao operador logico
+53 ( delimitador
+53 i identificador
+53 <> operador relacional
+53 ( delimitador
+53 metadeTamanho identificador
 53 + operador aritimetico
 53 1 numero
-53 ; delimitador
-54 fim palavra reservada
-55 senao palavra reservada
-56 inicio palavra reservada
-57 se palavra reservada
-57 ( delimitador
-57 nao operador logico
-57 ( delimitador
-57 j identificador
-57 <> operador relacional
-57 ( delimitador
-57 posicaoFim identificador
+53 ) delimitador
+53 ) delimitador
+53 ) delimitador
+53 entao palavra reservada
+54 inicio palavra reservada
+55 vetorTemp identificador
+55 <<< delimitador
+55 k identificador
+55 >>> delimitador
+55 << delimitador
+55 vetor identificador
+55 <<< delimitador
+55 j identificador
+55 >>> delimitador
+55 ; delimitador
+56 j identificador
+56 << delimitador
+56 j identificador
+56 + operador aritimetico
+56 1 numero
+56 ; delimitador
+57 k identificador
+57 << delimitador
+57 k identificador
 57 + operador aritimetico
 57 1 numero
-57 ) delimitador
-57 ) delimitador
-57 ) delimitador
-57 entao palavra reservada
-58 inicio palavra reservada
-59 vetorTemp identificador
-59 <<< delimitador
-59 k identificador
-59 >>> delimitador
-59 << delimitador
-59 vetor identificador
-59 <<< delimitador
-59 i identificador
-59 >>> delimitador
-59 ; delimitador
-60 j identificador
-60 << delimitador
-60 j identificador
-60 + operador aritimetico
-60 1 numero
-60 ; delimitador
-61 k identificador
-61 << delimitador
-61 k identificador
+57 ; delimitador
+58 fim palavra reservada
+59 senao palavra reservada
+60 inicio palavra reservada
+61 se palavra reservada
+61 ( delimitador
+61 nao operador logico
+61 ( delimitador
+61 j identificador
+61 <> operador relacional
+61 ( delimitador
+61 posicaoFim identificador
 61 + operador aritimetico
 61 1 numero
-61 ; delimitador
-62 fim palavra reservada
-63 senao palavra reservada
-64 inicio palavra reservada
-65 se palavra reservada
-65 ( delimitador
-65 vetor identificador
-65 <<< delimitador
-65 i identificador
-65 >>> delimitador
-65 < delimitador
-65 vetor identificador
-65 <<< delimitador
-65 j identificador
-65 >>> delimitador
-65 ) delimitador
-65 entao palavra reservada
-66 inicio palavra reservada
-67 vetorTemp identificador
-67 <<< delimitador
-67 k identificador
-67 >>> delimitador
-67 << delimitador
-67 vetor identificador
-67 <<< delimitador
-67 i identificador
-67 >>> delimitador
-67 ; delimitador
-68 j identificador
-68 << delimitador
-68 j identificador
-68 + operador aritimetico
-68 1 numero
-68 ; delimitador
-69 k identificador
-69 << delimitador
-69 k identificador
-69 + operador aritimetico
-69 1 numero
-69 ; delimitador
-70 fim palavra reservada
-71 senao palavra reservada
-72 inicio palavra reservada
-73 vetorTemp identificador
-73 <<< delimitador
+61 ) delimitador
+61 ) delimitador
+61 ) delimitador
+61 entao palavra reservada
+62 inicio palavra reservada
+63 vetorTemp identificador
+63 <<< delimitador
+63 k identificador
+63 >>> delimitador
+63 << delimitador
+63 vetor identificador
+63 <<< delimitador
+63 i identificador
+63 >>> delimitador
+63 ; delimitador
+64 j identificador
+64 << delimitador
+64 j identificador
+64 + operador aritimetico
+64 1 numero
+64 ; delimitador
+65 k identificador
+65 << delimitador
+65 k identificador
+65 + operador aritimetico
+65 1 numero
+65 ; delimitador
+66 fim palavra reservada
+67 senao palavra reservada
+68 inicio palavra reservada
+69 se palavra reservada
+69 ( delimitador
+69 vetor identificador
+69 <<< delimitador
+69 i identificador
+69 >>> delimitador
+69 < delimitador
+69 vetor identificador
+69 <<< delimitador
+69 j identificador
+69 >>> delimitador
+69 ) delimitador
+69 entao palavra reservada
+70 inicio palavra reservada
+71 vetorTemp identificador
+71 <<< delimitador
+71 k identificador
+71 >>> delimitador
+71 << delimitador
+71 vetor identificador
+71 <<< delimitador
+71 i identificador
+71 >>> delimitador
+71 ; delimitador
+72 j identificador
+72 << delimitador
+72 j identificador
+72 + operador aritimetico
+72 1 numero
+72 ; delimitador
 73 k identificador
-73 >>> delimitador
 73 << delimitador
-73 vetor identificador
-73 <<< delimitador
-73 j identificador
-73 >>> delimitador
+73 k identificador
+73 + operador aritimetico
+73 1 numero
 73 ; delimitador
-74 j identificador
-74 << delimitador
-74 j identificador
-74 + operador aritimetico
-74 1 numero
-74 ; delimitador
-75 k identificador
-75 << delimitador
-75 k identificador
-75 + operador aritimetico
-75 1 numero
-75 ; delimitador
-76 fim palavra reservada
-77 fim palavra reservada
-78 fim palavra reservada
-79 fim palavra reservada
-80 i identificador
-80 << delimitador
-80 posicaoInicio identificador
-80 ; delimitador
-81 enquanto palavra reservada
-81 ( delimitador
-81 i identificador
-81 <= operador relacional
-81 posicaoFim identificador
-81 ) delimitador
-81 faca palavra reservada
-82 inicio palavra reservada
-84 vetor identificador
-84 <<< delimitador
+74 fim palavra reservada
+75 senao palavra reservada
+76 inicio palavra reservada
+77 vetorTemp identificador
+77 <<< delimitador
+77 k identificador
+77 >>> delimitador
+77 << delimitador
+77 vetor identificador
+77 <<< delimitador
+77 j identificador
+77 >>> delimitador
+77 ; delimitador
+78 j identificador
+78 << delimitador
+78 j identificador
+78 + operador aritimetico
+78 1 numero
+78 ; delimitador
+79 k identificador
+79 << delimitador
+79 k identificador
+79 + operador aritimetico
+79 1 numero
+79 ; delimitador
+80 fim palavra reservada
+81 fim palavra reservada
+82 fim palavra reservada
+83 fim palavra reservada
 84 i identificador
-84 >>> delimitador
 84 << delimitador
-84 vetorTemp identificador
-84 <<< delimitador
-84 i identificador
-84 - operador aritimetico
 84 posicaoInicio identificador
-84 >>> delimitador
 84 ; delimitador
+85 enquanto palavra reservada
+85 ( delimitador
 85 i identificador
-85 << delimitador
-85 i identificador
-85 + operador aritimetico
-85 1 numero
-85 ; delimitador
-86 fim palavra reservada
-87 fim palavra reservada
-88 fim palavra reservada
+85 <= operador relacional
+85 posicaoFim identificador
+85 ) delimitador
+85 faca palavra reservada
+86 inicio palavra reservada
+88 vetor identificador
+88 <<< delimitador
+88 i identificador
+88 >>> delimitador
+88 << delimitador
+88 vetorTemp identificador
+88 <<< delimitador
+88 i identificador
+88 - operador aritimetico
+88 posicaoInicio identificador
+88 >>> delimitador
+88 ; delimitador
+89 i identificador
+89 << delimitador
+89 i identificador
+89 + operador aritimetico
+89 1 numero
+89 ; delimitador
+90 fim palavra reservada
+91 fim palavra reservada
+92 fim palavra reservada
 

@@ -30,6 +30,7 @@ public class Sintatico {
     private String parametro;
     private boolean isVetor;
     private LinkedList<Funcao> funcoes;
+    private boolean ok =false;
 
     public Sintatico() {
         
@@ -81,6 +82,8 @@ public class Sintatico {
             }
         }
         gravarArq.close();
+        if(erros.isEmpty())
+            ok = true;
         return funcoes;
     }
     //vê o token atual
@@ -1307,4 +1310,10 @@ public class Sintatico {
         }
         return r;
     }
+
+    public boolean isOk() {
+        return ok;
+    }
+    
+    
 }

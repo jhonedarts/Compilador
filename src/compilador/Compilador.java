@@ -37,10 +37,13 @@ public class Compilador {
         for (int y = 0; y < listOfFiles.length; y++) {
             if (listOfFiles[y].isFile()){
                 tokensList =  lexico.start(listOfFiles[y]);
-                //chamar o sintatico passando tokensList como parametro
-                funcoesList = sintatico.start(tokensList, listOfFiles[y].getName());
-                //chamar o semantico, passando a tabela de simbolos das funcoes
-                semantico.start(tokensList, funcoesList, listOfFiles[y].getName());
+                if(lexico.isOk()){
+                    //chamar o sintatico passando tokensList como parametro
+                    funcoesList = sintatico.start(tokensList, listOfFiles[y].getName());
+                    if(sintatico.isOk())
+                        //chamar o semantico, passando a tabela de simbolos das funcoes
+                        semantico.start(tokensList, funcoesList, listOfFiles[y].getName());
+                }
             }
         }
     }

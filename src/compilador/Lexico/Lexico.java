@@ -24,6 +24,7 @@ public class Lexico {
     private String delimitadoresUnitarios;
     private String tabulacao;
     private String arqSaida;
+    private boolean ok = false;
 
     public Lexico() {
         numeros = ".0123456789";
@@ -228,9 +229,15 @@ public class Lexico {
             //System.out.println(t.getLinha()+" "+t.getLexema()+" "+t.getTipo());
         }
         gravarArq.close();
-         
         
+        if(errosList.isEmpty())
+            ok = true;
         return tokensList;
     }
+
+    public boolean isOk() {
+        return ok;
+    }
+    
     
 }

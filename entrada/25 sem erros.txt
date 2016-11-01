@@ -30,8 +30,12 @@ inicio
     
 fim
 
-funcao mergeSort(inteiro vetor<<<10>>>, inteiro posicaoInicio, inteiro posicaoFim)
+funcao inteiro mergeSort(inteiro vetor<<<10>>>, inteiro posicaoInicio, inteiro posicaoFim)
 inicio
+    mergeSort << 2;
+    mergeSort << 2 + mergeSort;
+    leia(mergeSort);
+    vetor<<<mergeSort>>> << 2;
     var inteiro i, j, k, metadeTamanho, vetorTemp<<<10>>>;
     
     se (posicaoInicio <> posicaoFim) entao

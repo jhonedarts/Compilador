@@ -14,6 +14,7 @@ public class Simbolo {
     private String tipo;
     private Object conteudo;
     private boolean inicializado;
+    private boolean retornoFuncao = false;
 
     public Simbolo(Object conteudo, String tipo) {
         this.conteudo = conteudo;
@@ -41,6 +42,14 @@ public class Simbolo {
 
     public void setInicializado(boolean inicializado) {
         this.inicializado = inicializado;
+    }
+
+    public boolean isRetornoFuncao() {
+        return retornoFuncao;
+    }
+
+    public void setRetornoFuncao(boolean retornoFuncao) {
+        this.retornoFuncao = retornoFuncao;
     }
     
     
