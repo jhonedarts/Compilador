@@ -1,12 +1,46 @@
-6 Variavel "a" ja declarada
-6 Tipos incompativeis, inteiro e 2.1
-6 Variavel "b" ja declarada
-14 Variavel "z" ja declarada
-25 Variavel "i" ja declarada
-25 Variavel "i" ja declarada
-25 Variavel "posicaoInicio" ja declarada
-37 Variavel "i" ja declarada
-37 Variavel "i" ja declarada
-37 Variavel "posicaoInicio" ja declarada
-43 Instrucao de retorno nao encontrada
-43 funcao "abacate" ja declarada
+12 Variavel a nao inicializada
+12 Variavel b nao inicializada
+12 Funcao a nao declarada
+12 Atribuicao mal feita, esperava um valor caractere
+14 Variavel a nao inicializada
+14 Variavel yu nao declarada
+14 Atribuicao mal feita, esperava um valor inteiroVetor
+15 Variavel yu nao declarada
+15 Atribuicao mal feita, esperava um valor caractere
+16 Variavel "a" nao inicializada
+18 Variavel a nao inicializada
+18 Variavel b nao inicializada
+18 Variavel b nao inicializada
+18 Variavel b nao inicializada
+19 Atribuicao mal feita, esperava um valor 
+21 Atribuicao mal feita, esperava um valor 
+23 Variavel a nao inicializada
+23 Variavel b nao inicializada
+23 Funcao a nao declarada
+23 Atribuicao mal feita, esperava um valor caractere
+24 Variavel i nao inicializada
+24 Variavel posicaoFim nao declarada
+26 Variavel "c" nao inicializada
+27 Variavel vetorTemp nao declarada
+27 Variavel "posicaoInicio" nao declarada
+27 Atribuicao mal feita, esperava um valor VetorVetor
+28 Variavel i nao inicializada
+28 Atribuicao mal feita, esperava um valor inteiro
+35 Variavel a nao inicializada
+35 Variavel b nao inicializada
+35 Funcao a nao declarada
+35 Atribuicao mal feita, esperava um valor inteiro
+36 Variavel i nao inicializada
+36 Variavel posicaoFim nao declarada
+39 Variavel vetorTemp nao declarada
+39 Vetor mal declarado, esperava um valor do tipo inteiro
+39 Atribuicao mal feita, esperava um valor VetorVetor
+40 Variavel i nao inicializada
+40 Atribuicao mal feita, esperava um valor inteiro
+42 Funcao b nao declarada
+42 Variavel a nao inicializada
+42 Variavel b nao inicializada
+42 Variavel a nao inicializada
+42 Atribuicao mal feita, esperava um valor inteiro
+45 Instrucao de retorno nao encontrada
+45 funcao "abacate" ja declarada

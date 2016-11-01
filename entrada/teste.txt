@@ -1,9 +1,9 @@
 var inicio
-inteiro a, b, c;
+inteiro a, b, c<<<10>>>, i;
 fim
 
 const inicio
-inteiro a<<2.1, b<<4;
+inteiro ax<<2, bx<<4;
 real x<< 3.2, t<<1;
 fim
 
@@ -11,7 +11,9 @@ programa inicio
 var caractere a;
 a << a+b - a(3+1);
 leia (a);
-escreva (z);
+c<<<1>>> << a + yu = verdadeiro;
+a << yu;
+escreva (a);
 
 se (nao (a>b=b<4<>(nao b))=verdadeiro) entao inicio
 	xurupitas << 20;
@@ -21,20 +23,20 @@ fim
 a << a+b - a(3+1);
 enquanto ( i <= posicaoFim) faca
         inicio
-	    var caractere a<<<2>>>, u;
+	    var caractere a<<< c >>>, u;
             vetor<<<i>>> << vetorTemp<<<i-posicaoInicio>>>;
             i << i + 1;
         fim
 
 fim
 
-funcao inteiro abacate (inteiro i) inicio
-var caractere a;
+funcao inteiro abacate (real zorro) inicio
+var inteiro a, b;
 a << a+b - a(3+1);
 enquanto ( i <= posicaoFim) faca
         inicio
 
-            vetor<<<i>>> << vetorTemp<<<i-posicaoInicio>>>;
+            vetor<<<i>>> << vetorTemp<<<i-zorro>>>;
             i << i + 1;
         fim
 abacate << b(a*b/(a+5*4*(2+2)));
@@ -43,3 +45,14 @@ fim
 funcao inteiro abacate (inteiro i) inicio
 
 fim
+
+{
+testar mais casos de:
+funcao sem instrucao de retorno
+declaracao em escopos (inclui parametro de funcao)
+checar parametros de funcao
+
+a << b + c
+com b caractere
+e c = booleano
+}

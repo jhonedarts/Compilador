@@ -6,16 +6,21 @@
 2 b identificador
 2 , delimitador
 2 c identificador
+2 <<< delimitador
+2 10 numero
+2 >>> delimitador
+2 , delimitador
+2 i identificador
 2 ; delimitador
 3 fim palavra reservada
 5 const palavra reservada
 5 inicio palavra reservada
 6 inteiro identificador
-6 a identificador
+6 ax identificador
 6 << delimitador
-6 2.1 numero
+6 2 numero
 6 , delimitador
-6 b identificador
+6 bx identificador
 6 << delimitador
 6 4 numero
 6 ; delimitador
@@ -53,178 +58,196 @@
 13 a identificador
 13 ) delimitador
 13 ; delimitador
-14 escreva palavra reservada
-14 ( delimitador
-14 z identificador
-14 ) delimitador
+14 c identificador
+14 <<< delimitador
+14 1 numero
+14 >>> delimitador
+14 << delimitador
+14 a identificador
+14 + operador aritimetico
+14 yu identificador
+14 = operador relacional
+14 verdadeiro palavra reservada
 14 ; delimitador
-16 se palavra reservada
-16 ( delimitador
-16 nao operador logico
+15 a identificador
+15 << delimitador
+15 yu identificador
+15 ; delimitador
+16 escreva palavra reservada
 16 ( delimitador
 16 a identificador
-16 > delimitador
-16 b identificador
-16 = operador relacional
-16 b identificador
-16 < delimitador
-16 4 numero
-16 <> operador relacional
-16 ( delimitador
-16 nao operador logico
-16 b identificador
 16 ) delimitador
-16 ) delimitador
-16 = operador relacional
-16 verdadeiro palavra reservada
-16 ) delimitador
-16 entao palavra reservada
-16 inicio palavra reservada
-17 xurupitas identificador
-17 << delimitador
-17 20 numero
-17 ; delimitador
-18 fim palavra reservada
-18 senao palavra reservada
+16 ; delimitador
+18 se palavra reservada
+18 ( delimitador
+18 nao operador logico
+18 ( delimitador
+18 a identificador
+18 > delimitador
+18 b identificador
+18 = operador relacional
+18 b identificador
+18 < delimitador
+18 4 numero
+18 <> operador relacional
+18 ( delimitador
+18 nao operador logico
+18 b identificador
+18 ) delimitador
+18 ) delimitador
+18 = operador relacional
+18 verdadeiro palavra reservada
+18 ) delimitador
+18 entao palavra reservada
 18 inicio palavra reservada
 19 xurupitas identificador
 19 << delimitador
-19 17 numero
+19 20 numero
 19 ; delimitador
 20 fim palavra reservada
-21 a identificador
+20 senao palavra reservada
+20 inicio palavra reservada
+21 xurupitas identificador
 21 << delimitador
-21 a identificador
-21 + operador aritimetico
-21 b identificador
-21 - operador aritimetico
-21 a identificador
-21 ( delimitador
-21 3 numero
-21 + operador aritimetico
-21 1 numero
-21 ) delimitador
+21 17 numero
 21 ; delimitador
-22 enquanto palavra reservada
-22 ( delimitador
-22 i identificador
-22 <= operador relacional
-22 posicaoFim identificador
-22 ) delimitador
-22 faca palavra reservada
-23 inicio palavra reservada
-24 var palavra reservada
-24 caractere palavra reservada
-24 a identificador
-24 <<< delimitador
-24 2 numero
-24 >>> delimitador
-24 , delimitador
-24 u identificador
-24 ; delimitador
-25 vetor identificador
-25 <<< delimitador
-25 i identificador
-25 >>> delimitador
-25 << delimitador
-25 vetorTemp identificador
-25 <<< delimitador
-25 i identificador
-25 - operador aritimetico
-25 posicaoInicio identificador
-25 >>> delimitador
-25 ; delimitador
-26 i identificador
-26 << delimitador
-26 i identificador
-26 + operador aritimetico
-26 1 numero
+22 fim palavra reservada
+23 a identificador
+23 << delimitador
+23 a identificador
+23 + operador aritimetico
+23 b identificador
+23 - operador aritimetico
+23 a identificador
+23 ( delimitador
+23 3 numero
+23 + operador aritimetico
+23 1 numero
+23 ) delimitador
+23 ; delimitador
+24 enquanto palavra reservada
+24 ( delimitador
+24 i identificador
+24 <= operador relacional
+24 posicaoFim identificador
+24 ) delimitador
+24 faca palavra reservada
+25 inicio palavra reservada
+26 var palavra reservada
+26 caractere palavra reservada
+26 a identificador
+26 <<< delimitador
+26 c identificador
+26 >>> delimitador
+26 , delimitador
+26 u identificador
 26 ; delimitador
-27 fim palavra reservada
+27 vetor identificador
+27 <<< delimitador
+27 i identificador
+27 >>> delimitador
+27 << delimitador
+27 vetorTemp identificador
+27 <<< delimitador
+27 i identificador
+27 - operador aritimetico
+27 posicaoInicio identificador
+27 >>> delimitador
+27 ; delimitador
+28 i identificador
+28 << delimitador
+28 i identificador
+28 + operador aritimetico
+28 1 numero
+28 ; delimitador
 29 fim palavra reservada
-31 funcao palavra reservada
-31 inteiro identificador
-31 abacate identificador
-31 ( delimitador
-31 inteiro identificador
-31 i identificador
-31 ) delimitador
-31 inicio palavra reservada
-32 var palavra reservada
-32 caractere palavra reservada
-32 a identificador
-32 ; delimitador
-33 a identificador
-33 << delimitador
-33 a identificador
-33 + operador aritimetico
-33 b identificador
-33 - operador aritimetico
-33 a identificador
+31 fim palavra reservada
+33 funcao palavra reservada
+33 inteiro identificador
+33 abacate identificador
 33 ( delimitador
-33 3 numero
-33 + operador aritimetico
-33 1 numero
+33 real palavra reservada
+33 zorro identificador
 33 ) delimitador
-33 ; delimitador
-34 enquanto palavra reservada
-34 ( delimitador
-34 i identificador
-34 <= operador relacional
-34 posicaoFim identificador
-34 ) delimitador
-34 faca palavra reservada
-35 inicio palavra reservada
-37 vetor identificador
-37 <<< delimitador
-37 i identificador
-37 >>> delimitador
-37 << delimitador
-37 vetorTemp identificador
-37 <<< delimitador
-37 i identificador
-37 - operador aritimetico
-37 posicaoInicio identificador
-37 >>> delimitador
-37 ; delimitador
-38 i identificador
-38 << delimitador
-38 i identificador
-38 + operador aritimetico
-38 1 numero
-38 ; delimitador
-39 fim palavra reservada
-40 abacate identificador
+33 inicio palavra reservada
+34 var palavra reservada
+34 inteiro identificador
+34 a identificador
+34 , delimitador
+34 b identificador
+34 ; delimitador
+35 a identificador
+35 << delimitador
+35 a identificador
+35 + operador aritimetico
+35 b identificador
+35 - operador aritimetico
+35 a identificador
+35 ( delimitador
+35 3 numero
+35 + operador aritimetico
+35 1 numero
+35 ) delimitador
+35 ; delimitador
+36 enquanto palavra reservada
+36 ( delimitador
+36 i identificador
+36 <= operador relacional
+36 posicaoFim identificador
+36 ) delimitador
+36 faca palavra reservada
+37 inicio palavra reservada
+39 vetor identificador
+39 <<< delimitador
+39 i identificador
+39 >>> delimitador
+39 << delimitador
+39 vetorTemp identificador
+39 <<< delimitador
+39 i identificador
+39 - operador aritimetico
+39 zorro identificador
+39 >>> delimitador
+39 ; delimitador
+40 i identificador
 40 << delimitador
-40 b identificador
-40 ( delimitador
-40 a identificador
-40 * operador aritimetico
-40 b identificador
-40 / operador aritimetico
-40 ( delimitador
-40 a identificador
+40 i identificador
 40 + operador aritimetico
-40 5 numero
-40 * operador aritimetico
-40 4 numero
-40 * operador aritimetico
-40 ( delimitador
-40 2 numero
-40 + operador aritimetico
-40 2 numero
-40 ) delimitador
-40 ) delimitador
-40 ) delimitador
+40 1 numero
 40 ; delimitador
 41 fim palavra reservada
-43 funcao palavra reservada
-43 inteiro identificador
-43 abacate identificador
-43 ( delimitador
-43 inteiro identificador
-43 i identificador
-43 ) delimitador
-43 inicio palavra reservada
-45 fim palavra reservada
+42 abacate identificador
+42 << delimitador
+42 b identificador
+42 ( delimitador
+42 a identificador
+42 * operador aritimetico
+42 b identificador
+42 / operador aritimetico
+42 ( delimitador
+42 a identificador
+42 + operador aritimetico
+42 5 numero
+42 * operador aritimetico
+42 4 numero
+42 * operador aritimetico
+42 ( delimitador
+42 2 numero
+42 + operador aritimetico
+42 2 numero
+42 ) delimitador
+42 ) delimitador
+42 ) delimitador
+42 ; delimitador
+43 fim palavra reservada
+45 funcao palavra reservada
+45 inteiro identificador
+45 abacate identificador
+45 ( delimitador
+45 inteiro identificador
+45 i identificador
+45 ) delimitador
+45 inicio palavra reservada
+47 fim palavra reservada
+58 {testar mais casos de:funcao sem instrucao de retornodeclaracao em escopos (inclui parametro de funcao)checar parametros de funcaoa << b + ccom b caracteree c = booleano} comentario
 

@@ -15,12 +15,10 @@ public class TabelaSimbolos {
     private String escopo =null;
     private HashMap<String, Simbolo> simbolos;
     private TabelaSimbolos anterior;
-    private TabelaSimbolos proximo;
 
     public TabelaSimbolos(TabelaSimbolos anterior) {
         this.simbolos = new HashMap<String, Simbolo>();
         this.anterior = anterior;
-        this.proximo = null;
     }
 
     public void put(String key, Simbolo simbolo){
@@ -50,13 +48,5 @@ public class TabelaSimbolos {
     public void setAnterior(TabelaSimbolos anterior) {
         this.anterior = anterior;
     }
-
-    public TabelaSimbolos getProximo() {
-        return proximo;
-    }
-
-    public void setProximo(TabelaSimbolos proximo) {
-        this.proximo = proximo;
-    }  
     
 }
