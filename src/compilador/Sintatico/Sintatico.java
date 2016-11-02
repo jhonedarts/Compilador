@@ -276,7 +276,7 @@ public class Sintatico {
     //'<<<'<Exp_Aritmetica><vetor2>'>>>' | <>
     private void vetor() throws EndTokensException {
         if(ver().getLexema().equals("<<<")){
-            parametro = "vetor "+parametro;
+            parametro = parametro+"Vetor";
             isVetor= true;
             consumir();
             exp_aritmetica(); // a fazer   

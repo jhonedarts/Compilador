@@ -1,32 +1,44 @@
-12 Variavel a nao inicializada
-12 Variavel b nao inicializada
-12 Funcao a nao declarada
-14 Variavel yu nao declarada
+12 Expressao mal formada, caractere inesperado
+12 Variavel "a" nao inicializada
+12 Variavel "b" nao inicializada
+12 Funcao "a" nao declarada
+12 Atribuicao mal feita, esperava um valor caractere
+14 Expressao mal formada, caractere inesperado
+14 Variavel "yu" nao declarada
 14 Atribuicao mal feita, esperava um valor inteiro
-15 Variavel yu nao declarada
+15 Variavel "yu" nao declarada
 15 Atribuicao mal feita, esperava um valor caractere
-18 Variavel b nao inicializada
-18 Variavel b nao inicializada
-18 Variavel b nao inicializada
-19 Variavel xurupitas nao declarada
-21 Variavel xurupitas nao declarada
-23 Variavel b nao inicializada
-23 Funcao a nao declarada
-24 Variavel i nao inicializada
-24 Variavel posicaoFim nao declarada
+16 Expressao mal formada, caractere inesperado
+18 Variavel "b" nao inicializada
+18 Variavel "b" nao inicializada
+18 Variavel "b" nao inicializada
+19 Variavel "xurupitas" nao declarada
+21 Variavel "xurupitas" nao declarada
+23 Expressao mal formada, caractere inesperado
+23 Variavel "b" nao inicializada
+23 Funcao "a" nao declarada
+23 Atribuicao mal feita, esperava um valor caractere
+24 Variavel "i" nao inicializada
+24 Variavel "posicaoFim" nao declarada
 26 Variavel "c" nao inicializada
-27 Variavel vetor nao declarada
-27 Variavel vetorTemp nao declarada
+27 Variavel "i" nao inicializada
+27 Variavel "vetor" nao declarada
+27 Variavel "vetorTemp" nao declarada
+27 Variavel "i" nao inicializada
 27 Variavel "posicaoInicio" nao declarada
-28 Variavel i nao inicializada
-35 Variavel a nao inicializada
-35 Variavel b nao inicializada
-35 Funcao a nao declarada
-36 Variavel posicaoFim nao declarada
-39 Variavel vetor nao declarada
-39 Variavel vetorTemp nao declarada
+28 Variavel "i" nao inicializada
+35 Variavel "a" nao inicializada
+35 Variavel "b" nao inicializada
+35 Funcao "a" nao declarada
+35 Atribuicao mal feita, esperava um valor inteiro
+36 Variavel "posicaoFim" nao declarada
+39 Variavel "vetor" nao declarada
+39 Variavel "vetorTemp" nao declarada
 39 Vetor mal declarado, esperava um valor do tipo inteiro
-42 Funcao b nao declarada
-42 Variavel b nao inicializada
+42 Funcao "b" nao declarada
+42 Variavel "a" nao inicializada
+42 Variavel "b" nao inicializada
+42 Variavel "a" nao inicializada
+42 Atribuicao mal feita, esperava um valor inteiro
 45 Instrucao de retorno nao encontrada
-45 funcao "abacate" ja declarada
+45 Funcao "abacate" ja declarada

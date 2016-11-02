@@ -1,17 +1,20 @@
 programa
 inicio
     var inteiro tamanho, i, vetor<<<tamanho>>>;
-        
+    var cadeia q, xc;
+    q << "as";
+    xc << 3 + q();
     vetor<<<i>>> << 2;
     i << 0;
 
     escreva ("Digite o tamanho do vetor");
     leia (tamanho);
     
-    enquanto (i < tamanho) faca
+    enquanto (i + tamanho) faca
     inicio
         escreva("Digite um numero para preencher o vetor");
-        leia(vetor<<<i>>>);
+        leia(vetor<<<i+q>>>);
+        leia(vetor<<<q+i>>>);
 		i << i + 1;
     fim
     
@@ -30,12 +33,8 @@ inicio
     
 fim
 
-funcao inteiro mergeSort(inteiro vetor<<<10>>>, inteiro posicaoInicio, inteiro posicaoFim)
+funcao mergeSort(inteiro vetor<<<10>>>, inteiro posicaoInicio, inteiro posicaoFim)
 inicio
-    mergeSort << 2;
-    mergeSort << 2 + mergeSort;
-    leia(mergeSort);
-    vetor<<<mergeSort>>> << 2;
     var inteiro i, j, k, metadeTamanho, vetorTemp<<<10>>>;
     
     se (posicaoInicio <> posicaoFim) entao

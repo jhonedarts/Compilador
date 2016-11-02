@@ -1,3 +1,7 @@
-36 Variavel mergeSort nao declarada
-37 Variavel mergeSort nao declarada
-38 Variavel "mergeSort" nao declarada
+3 Variavel "tamanho" nao inicializada
+6 Funcao "q" nao declarada
+6 Atribuicao mal feita, esperava um valor cadeia
+7 Variavel "i" nao inicializada
+13 Condicao invalida, espava valor booleano
+16 Expressao mal formada, cadeia inesperado
+17 Expressao mal formada, cadeia inesperado

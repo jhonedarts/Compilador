@@ -35,6 +35,8 @@ public class Semantico {
     private LinkedList<String> funcoesLidas;
     private int aritmeticaValor = 0;
     private boolean atribuicaoTipo[] = {false, false, false, false, false};//inteiro - real - booleano - caractere - cadeia
+    private boolean expError =false, opArit = false;
+    
     public Semantico() {
         
     }
@@ -64,7 +66,7 @@ public class Semantico {
             if(!funcao.isOk())
                 erros.add(new Erro("Instrucao de retorno nao encontrada",funcao.getLinha()));
             if (funcoesAux.containsKey(funcao.getNome()))
-                erros.add(new Erro("funcao \""+funcao.getNome()+"\" ja declarada",funcao.getLinha()));
+                erros.add(new Erro("Funcao \""+funcao.getNome()+"\" ja declarada",funcao.getLinha()));
             else
                 funcoesAux.put(funcao.getNome(), funcao);
         }
@@ -233,6 +235,7 @@ public class Semantico {
             tipo = tipo+"Vetor";
             parametro = parametro+"Vetor";
             consumir();
+            expError = false;
             exp_aritmetica(simbolos);  
             if(aritmeticaValor!=1 &&aritmeticaValor!=0){
                 erros.add(new Erro("Vetor mal declarado, esperava um valor do tipo inteiro", ver().getLinha()));
@@ -249,6 +252,7 @@ public class Semantico {
     private void vetor2(TabelaSimbolos simbolos) throws EndTokensException{
         if(ver().getLexema().equals(",")){
             consumir();
+            expError = false;
             exp_aritmetica(simbolos);
             if(aritmeticaValor!=1 && aritmeticaValor!=0){
                 erros.add(new Erro("Vetor mal declarado, esperava um valor do tipo inteiro", ver().getLinha()));
@@ -376,8 +380,7 @@ public class Semantico {
     //<Var_Local><Corpo_Bloco> | <Comando><Corpo_Bloco> 
     // | <Chamada_Funcao>';'<Corpo_Bloco> | <Atribuicao><Corpo_Bloco> | <>
     private void corpo_bloco(TabelaSimbolos simbolos) throws EndTokensException{
-        //System.out.println("corpo_bloco");
-        
+        //System.out.println("corpo_bloco");       
         
         if (igual(ver().getLexema(),"fim", "funcao")){            
             return;
@@ -481,6 +484,7 @@ public class Semantico {
             consumir();
             escreva_params2(simbolos);
         }else{
+            expError = false;
             exp_aritmetica(simbolos); 
             escreva_params2(simbolos);
         }
@@ -535,10 +539,10 @@ public class Semantico {
                         simb.setInicializado(true);
                     }
                 }else{
-                    erros.add(new Erro("Variavel "+token.getLexema()+" nao declarada", token.getLinha()));
+                    erros.add(new Erro("Variavel \""+token.getLexema()+"\" nao declarada", token.getLinha()));
                 }
             }else{//nao declarado
-                erros.add(new Erro("Variavel "+token.getLexema()+" nao declarada", token.getLinha()));
+                erros.add(new Erro("Variavel \""+token.getLexema()+"\" nao declarada", token.getLinha()));
             }
             leia_params2(simbolos);
         }
@@ -558,7 +562,13 @@ public class Semantico {
             consumir();
             if(ver().getLexema().equals("(")){
                 consumir();
+                atribuicaoTipo[0]=atribuicaoTipo[1]=atribuicaoTipo[2]=atribuicaoTipo[3]=atribuicaoTipo[4]=false;
                 exp_logica(simbolos);
+                if(!atribuicaoTipo[2]){
+                    erros.add(new Erro("Condicao invalida, espava valor booleano", ver().getLinha()));
+                }
+                atribuicaoTipo[0]=atribuicaoTipo[1]=atribuicaoTipo[2]=atribuicaoTipo[3]=atribuicaoTipo[4]=false;
+                
                 if(ver().getLexema().equals(")")){
                     consumir();
                     if(ver().getLexema().equals("entao")){
@@ -586,7 +596,13 @@ public class Semantico {
             consumir();
             if(ver().getLexema().equals("(")){
                 consumir();
+                atribuicaoTipo[0]=atribuicaoTipo[1]=atribuicaoTipo[2]=atribuicaoTipo[3]=atribuicaoTipo[4]=false;
                 exp_logica(simbolos);
+                if(!atribuicaoTipo[2]){
+                    erros.add(new Erro("Condicao invalida, espava valor booleano", ver().getLinha()));
+                }
+                atribuicaoTipo[0]=atribuicaoTipo[1]=atribuicaoTipo[2]=atribuicaoTipo[3]=atribuicaoTipo[4]=false;
+                
                 if(ver().getLexema().equals(")")){
                     consumir();
                     if(ver().getLexema().equals("faca")){
@@ -649,7 +665,7 @@ public class Semantico {
                 }
             }
         }else{
-            erros.add(new Erro("Variavel "+token.getLexema()+" nao declarada", token.getLinha()));
+            erros.add(new Erro("Variavel \""+token.getLexema()+"\" nao declarada", token.getLinha()));
             if(ver().getLexema().equals("<<")){
                 consumir();
                 valor(simbolos);
@@ -752,12 +768,13 @@ public class Semantico {
     
     //id'('<Param_Cham_List>')'
     private void chamada_funcao(TabelaSimbolos simbolos) throws EndTokensException{
+        Funcao funcao = funcoesGet(ver().getLexema());
         if(ver().getTipo().equals("identificador")){
             consumir();
         }
         if(ver().getLexema().equals("(")){
             consumir();
-            param_cham_list(simbolos);
+            param_cham_list(simbolos, funcao);
         }
         if(ver().getLexema().equals(")"))
             consumir();
@@ -765,24 +782,116 @@ public class Semantico {
     }
     
     //<Valor><Param_Cham_List2> | <>
-    private void param_cham_list(TabelaSimbolos simbolos) throws EndTokensException{
+    private void param_cham_list(TabelaSimbolos simbolos, Funcao funcao) throws EndTokensException{
         //System.out.println(ver().getLexema()+" param_cham_list");
+        String isVetor ="";
+        boolean paramError = false;
         if(ver().getLexema().equals(")"))
             return;
+        atribuicaoTipo[0]=atribuicaoTipo[1]=atribuicaoTipo[2]=atribuicaoTipo[3]=atribuicaoTipo[4]=false;
+        if(ver().getTipo().equals("identificador") && (verLLX(1).getLexema().equals(",")||verLLX(1).getLexema().equals(")"))){
+            TabelaSimbolos simbs = simbolos;
+            Simbolo simb = null;
+            Token token = ver();
+            //verificar variavel em escopos
+            while (simbs!=null && simb==null){
+                simb = simbs.get(token.getLexema());
+                simbs = simbs.getAnterior();
+            }
+            if(simb!=null){
+                if (simb.getTipo().contains("Vetor"))
+                    isVetor ="Vetor";
+            }
+        }
+            
         valor(simbolos);
+        String tipoAtribuicao = "vazio";
+        if(atribuicaoTipo[2]==true)
+            tipoAtribuicao = "booleano";
+        else if(atribuicaoTipo[4]==true)
+            tipoAtribuicao = "cadeia";
+        else if(atribuicaoTipo[3]==true)
+            tipoAtribuicao = "caractere";
+        else if(atribuicaoTipo[1]==true)
+            tipoAtribuicao = "real";
+        else if(atribuicaoTipo[0]==true)
+            tipoAtribuicao = "inteiro";
+        tipoAtribuicao = tipoAtribuicao.concat(isVetor);
+        atribuicaoTipo[0]=atribuicaoTipo[1]=atribuicaoTipo[2]=atribuicaoTipo[3]=atribuicaoTipo[4]=false;
+        if(funcao!=null){
+            LinkedList<String> parametros = funcao.getParametros();
+                if(!parametros.isEmpty()){
+                    String tipo = parametros.getFirst();
+                    if(!tipo.equals(tipoAtribuicao)){
+                        erros.add(new Erro("Parametro invalido, esperava um valor "+tipo, ver().getLinha()));
+                        paramError=true;
+                    }
+                }else{
+                    erros.add(new Erro("Parametros inesperados, funcao "+funcao.getNome(), ver().getLinha()));
+                    paramError =true;
+                }
+        }   
         //System.out.println(ver().getLexema()+" param_cham_list2");
-        param_cham_list2(simbolos);
+        param_cham_list2(simbolos, funcao, paramError, 1);
     }
     
     //','<Valor><Param_Cham_List2> | <>
-    private void param_cham_list2(TabelaSimbolos simbolos) throws EndTokensException{
+    private void param_cham_list2(TabelaSimbolos simbolos, Funcao funcao, boolean paramError, int index) throws EndTokensException{
         if(igual(ver().getLexema(), ")", "inicio", "var", 
                                         "escreva", "leia", "se", "enquanto", "(", "fim", "funcao"))
             return;
         if(ver().getLexema().equals(",")){
             consumir();
+            String isVetor ="";
+            atribuicaoTipo[0]=atribuicaoTipo[1]=atribuicaoTipo[2]=atribuicaoTipo[3]=atribuicaoTipo[4]=false;
+            if(ver().getTipo().equals("identificador") && (verLLX(1).getLexema().equals(",")||verLLX(1).getLexema().equals(")"))){
+                TabelaSimbolos simbs = simbolos;
+                Simbolo simb = null;
+                Token token = ver();
+                //verificar variavel em escopos
+                while (simbs!=null && simb==null){
+                    simb = simbs.get(token.getLexema());
+                    simbs = simbs.getAnterior();
+                }
+                if(simb!=null){
+                    if (simb.getTipo().contains("Vetor"))
+                        isVetor ="Vetor";
+                }
+            }
+
             valor(simbolos);
-            param_cham_list2(simbolos);            
+            String tipoAtribuicao = "vazio";
+            if(atribuicaoTipo[2]==true)
+                tipoAtribuicao = "booleano";
+            else if(atribuicaoTipo[4]==true)
+                tipoAtribuicao = "cadeia";
+            else if(atribuicaoTipo[3]==true)
+                tipoAtribuicao = "caractere";
+            else if(atribuicaoTipo[1]==true)
+                tipoAtribuicao = "real";
+            else if(atribuicaoTipo[0]==true)
+                tipoAtribuicao = "inteiro";
+            tipoAtribuicao = tipoAtribuicao.concat(isVetor);
+            atribuicaoTipo[0]=atribuicaoTipo[1]=atribuicaoTipo[2]=atribuicaoTipo[3]=atribuicaoTipo[4]=false;
+            if(funcao!=null){
+                LinkedList<String> parametros = funcao.getParametros();
+                if(!parametros.isEmpty()){
+                    String tipo = parametros.get(index);
+                    if(!tipo.equals(tipoAtribuicao)){
+                        if(!paramError){
+                            erros.add(new Erro("Parametro invalido, esperava um valor "+tipo, ver().getLinha()));
+                            paramError =true;
+                        }
+                    }
+                }else{
+                    if(!paramError){
+                        erros.add(new Erro("Parametros inesperados, funcao "+funcao.getNome(), ver().getLinha()));
+                        paramError =true;
+                    }
+                }
+            }
+            index++;
+            param_cham_list2(simbolos, funcao, paramError, index);            
         }
     }
     
@@ -812,6 +921,13 @@ public class Semantico {
     //<Operador_A2><Valor_Numerico><Exp_MultDiv> | <>
     private void exp_muldiv(TabelaSimbolos simbolos) throws EndTokensException{
         if (igual(ver().getLexema(),"/", "*")){//<operador_a2> ::= * | /
+            //if(aritmeticaValor==0){//o anterior ao + ou - nao foi um numero
+            //    if(!expError){
+            //        erros.add(new Erro("Expressao mal formada",ver().getLinha()));
+            //        expError = true;
+            //    }
+            //}
+            //opArit = true;
             consumir();
             valor_numerico(simbolos);
             exp_muldiv(simbolos);
@@ -830,17 +946,22 @@ public class Semantico {
             if(verLLX(1).getLexema().equals("(")){                
                 chamada_funcao(simbolos);
                 Funcao funcao = funcoesGet(ver().getLexema());
+                String tipo = funcao.getTipoRetorno().split("Vetor")[0];
                 if(funcao!=null){//funcao existe
-                    if(funcao.getTipoRetorno().equals("inteiro")){
+                    if(tipo.equals("inteiro")){
                         aritmeticaValor = 1;
-                    }else if(funcao.getTipoRetorno().equals("real")){
+                    }else if(tipo.equals("real")){
                         aritmeticaValor = 2;
                     }else{//nao é um numero
+                        if(!expError){
+                            erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }
                         aritmeticaValor = 0;
                     }
                 }else{
                     erros.add(new Erro("Funcao nao declarada", ver().getLinha()));
-                    aritmeticaValor = 4;
+                    aritmeticaValor = 0;
                 }
             }else{
                 Simbolo simb = null;
@@ -851,17 +972,22 @@ public class Semantico {
                     simbs = simbs.getAnterior();
                 }
                 if(simb!=null){  
+                    String tipo = simb.getTipo().split("Vetor")[0];
                     if(simb.isRetornoFuncao()){
                         erros.add(new Erro("Variavel \""+ver().getLexema()+"\" nao declarada", ver().getLinha()));
                         aritmeticaValor = 0;
-                    }else if(simb.getTipo().equals("inteiro")){
+                    }else if(tipo.equals("inteiro") && simb.isInicializado()){
                         aritmeticaValor = 1;
-                    }else if(simb.getTipo().equals("real")){
+                    }else if(tipo.equals("real")&& simb.isInicializado()){
                         aritmeticaValor = 2;
-                    }else if(!simb.isInicializado() && !simb.isRetornoFuncao()){
+                    }else if((tipo.equals("real")||tipo.equals("inteiro"))&&!simb.isInicializado()){
                         aritmeticaValor = 0;
                         erros.add(new Erro("Variavel \""+ver().getLexema()+"\" nao inicializada", ver().getLinha()));
                     }else {
+                        if(!expError){
+                            erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }
                         aritmeticaValor = 0;
                     }
                 }else{
@@ -963,6 +1089,7 @@ public class Semantico {
     //<Operador_A1><Exp_Aritm_Logica2><Exp_SomaSub_Logica> | <>
     private void exp_somasub_logica(TabelaSimbolos simbolos) throws EndTokensException{
         if(igual(ver().getLexema(), "+", "-")){
+            opArit =true;
             consumir();
             exp_arim_logica2(simbolos);
             exp_somasub_logica(simbolos);
@@ -978,6 +1105,7 @@ public class Semantico {
     //<Operador_A2><Numerico_Logico><Exp_MultDiv_Logica> | <>
     private void exp_multdiv_logica(TabelaSimbolos simbolos) throws EndTokensException{
         if(igual(ver().getLexema(), "/", "*")){
+            opArit =true;
             consumir();
             numero_logico(simbolos);
             exp_multdiv_logica(simbolos);
@@ -1007,17 +1135,49 @@ public class Semantico {
                     String tipo = funcao.getTipoRetorno();
                     if(tipo.equals("inteiro")){
                         atribuicaoTipo[0]=true;//inteiro
+                        opArit =false;
                     }else if(tipo.equals("real")){
                         atribuicaoTipo[1]=true;//real
+                        opArit =false;
                     }else if(tipo.equals("booleano")){
                         atribuicaoTipo[2]=true;//booleano
+                        if(opArit){
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }
+                        if (igual(verLLX(1).getLexema(),"+", "-", "/", "*")){
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }
                     }else if(tipo.equals("caractere")){
                         atribuicaoTipo[3]=true;//caractere
+                        if(opArit){
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }
+                        if (igual(verLLX(1).getLexema(),"+", "-", "/", "*")){
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }            
                     }else if(tipo.equals("cadeia")){
                         atribuicaoTipo[4]=true;//cadeia
+                        if(opArit){
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }
+                        if (igual(verLLX(1).getLexema(),"+", "-", "/", "*")){                            
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }                        
                     }
                 }else{
-                    erros.add(new Erro("Funcao "+ver().getLexema()+" nao declarada",ver().getLinha()));
+                    erros.add(new Erro("Funcao \""+ver().getLexema()+"\" nao declarada",ver().getLinha()));
                 }
                     
                 chamada_funcao(simbolos);                
@@ -1034,22 +1194,54 @@ public class Semantico {
                     
                     if(tipo.equals("inteiro")){
                         atribuicaoTipo[0]=true;//inteiro
+                        opArit =false;
                     }else if(tipo.equals("real")){
                         atribuicaoTipo[1]=true;//real
-                    }else if(tipo.equals("booleano")){
+                        opArit =false;
+                    }else if(tipo.equals("booleano")){   
                         atribuicaoTipo[2]=true;//booleano
+                        if (igual(verLLX(1).getLexema(),"+", "-", "/", "*")){                            
+                            if(opArit){
+                                if(!expError)
+                                    erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                                expError = true;
+                            }
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }                        
                     }else if(tipo.equals("caractere")){
                         atribuicaoTipo[3]=true;//caractere
+                        if(opArit){
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }
+                        if (igual(verLLX(1).getLexema(),"+", "-", "/", "*")){
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }                        
                     }else if(tipo.equals("cadeia")){
                         atribuicaoTipo[4]=true;//cadeia
+                        if(opArit){
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                            }
+                        if (igual(verLLX(1).getLexema(),"+", "-", "/", "*")){
+                            if(!expError)
+                                erros.add(new Erro("Expressao mal formada, "+tipo+" inesperado", ver().getLinha()));
+                            expError = true;
+                        }                        
                     }
                     if(!simb.isRetornoFuncao()){
                         if(!simb.isInicializado())
-                            erros.add(new Erro("Variavel "+ver().getLexema()+" nao inicializada",ver().getLinha()));
+                            erros.add(new Erro("Variavel \""+ver().getLexema()+"\" nao inicializada",ver().getLinha()));
                     }else
-                        erros.add(new Erro("Variavel "+ver().getLexema()+" nao declarada",ver().getLinha()));
+                        erros.add(new Erro("Variavel \""+ver().getLexema()+"\" nao declarada",ver().getLinha()));
                 }else{
-                    erros.add(new Erro("Variavel "+ver().getLexema()+" nao declarada",ver().getLinha()));
+                    erros.add(new Erro("Variavel \""+ver().getLexema()+"\" nao declarada",ver().getLinha()));
                 }
                 id_vetor(simbolos);
             }
@@ -1103,8 +1295,11 @@ public class Semantico {
             else
                 atribuicaoTipo[3] = true;
             consumir();
-        }else
+        }else{
+            opArit =expError=false;
             exp_logica(simbolos);
+            opArit =expError=false;
+        }
     }
     //id<Vetor>
     private void id_vetor(TabelaSimbolos simbolos) throws EndTokensException{        
